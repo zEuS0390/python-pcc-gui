@@ -1,0 +1,2 @@
+Resources manage the images of the application, it compiles the resources.qrc that will return resources.py.
+'pyrcc5 -o ./utils/resources.py ./utils/resources.qrc'

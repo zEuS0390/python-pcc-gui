@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
 )
 from configparser import ConfigParser
 from src.app import MainWindow
-import sys
+import sys, rc.resources
 
 if __name__=="__main__":
     parser = ConfigParser()

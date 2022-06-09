@@ -1,0 +1,7 @@
+<!DOCTYPE RC>
+<RCC>
+    <qresource>
+        <file alias="app_icon.png">../img/app_icon.png</file>
+        <file alias="gear_icon.png">../img/gear_icon.png</file>
+    </qresource>
+</RCC>
