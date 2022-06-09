@@ -1,2 +1,14 @@
+from PyQt5.QtWidgets import (
+    QApplication
+)
+from configparser import ConfigParser
+from src.app import MainWindow
+import sys
+
 if __name__=="__main__":
-    pass
+    parser = ConfigParser()
+    parser.read("cfg/app.cfg")
+    app = QApplication(sys.argv)
+    mainwindow = MainWindow(parser)
+    mainwindow.show()
+    sys.exit(app.exec())
