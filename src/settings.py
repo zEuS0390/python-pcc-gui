@@ -2,9 +2,10 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QGridLayout, QLabel,
     QLineEdit, QVBoxLayout,
-    QHBoxLayout, QPushButton,
-    QDesktopWidget
+    QHBoxLayout, QPushButton
 )
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from configparser import ConfigParser
 import sys
 
@@ -13,9 +14,16 @@ class Settings(QWidget):
     def __init__(self, parser, parent=None):
         super(Settings, self).__init__(parent)
         self.parser = parser
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.setup_UI()
+        self.destroyed.connect(Settings._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("Settings instance deleted.")
 
     def setup_UI(self):
+        self.setWindowIcon(QIcon(":/gear_icon.png"))
         self.setWindowTitle("Settings")
         self.mainlayout = QVBoxLayout()
         self.inputslayout = QGridLayout()
@@ -27,8 +35,8 @@ class Settings(QWidget):
 
     def setup_inputs(self):
         self.inputs_conf = {
-            "app_title": ("App Title", QLineEdit),
-            "header_title": ("Header Title", QLineEdit)
+            "app_title": ("App Title:\t", QLineEdit),
+            "header_title": ("Header Title:\t", QLineEdit)
         }
         self.inputs = {}
         row = 0

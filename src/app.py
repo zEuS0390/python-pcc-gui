@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QWidget,
     QLabel
 )
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from .settings import Settings
 
@@ -14,6 +15,7 @@ class MainWindow(QMainWindow):
         self.setup_UI()
 
     def setup_UI(self):
+        self.setWindowIcon(QIcon(":/app_icon.png"))
         self.setWindowTitle(self.parser.get("application", "title"))
         self.resize(640, 480)
 
@@ -52,4 +54,5 @@ class MainWindow(QMainWindow):
 
     def open_settings(self):
         self.settings = Settings(self.parser)
+        self.settings.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.settings.show()
