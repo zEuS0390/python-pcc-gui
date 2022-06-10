@@ -9,11 +9,13 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 
 try:
-    from .constants import *
+    from src.constants import *
+    from src.linkssettings import LinksSettings
 except:
     import sys, os
     sys.path.insert(0, os.path.dirname(sys.path[0]))
-    from src.constants import *
+    from constants import *
+    from linkssettings import LinksSettings
     import rc.resources
 
 class Settings(QWidget):
@@ -41,13 +43,13 @@ class Settings(QWidget):
         self.setup_btns()
         self.setLayout(self.mainlayout)
         self.resize(self.mainlayout.sizeHint())
-        self.setMinimumWidth(320)
+        self.setMinimumWidth(640)
 
     def setup_inputs(self):
         self.inputs_conf = {
-            "app_title": ("App Title:\t", QLineEdit),
-            "header_title": ("Header Title:\t", QLineEdit),
-            "email": ("Email:\t", QLineEdit)
+            "app_title": ("App Title:", QLineEdit),
+            "header_title": ("Header Title:", QLineEdit),
+            "email": ("Email:", QLineEdit),
         }
         self.inputs = {}
         row = 0
@@ -76,18 +78,23 @@ class Settings(QWidget):
             "submit": ("Apply", self.apply)
         }
         self.btns = {}
+        self.btns["links"] = QPushButton("URL Links")
+        self.btns["links"].clicked.connect(self.open_links_settings)
+        self.btnslayout.addWidget(self.btns["links"])
+        self.btnslayout.addStretch()
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
+
         self.mainlayout.addLayout(self.btnslayout)
 
     def apply(self):
         self.parser.set("application", "title", self.inputs["app_title"][1].text())
         self.parser.set("application", "header_title", self.inputs["header_title"][1].text())
-        self.parser.set("application", "email", self.inputs["email"][1].text())
-        with open(CONFIG_NAME, "w") as cfgfile:
+        self.parser.set("mail", "email", self.inputs["email"][1].text())
+        with open(APP_CONFIG, "w") as cfgfile:
             self.parser.write(cfgfile)
         self.apply_settings.emit()
         self.close()
@@ -99,9 +106,14 @@ class Settings(QWidget):
             self.close()
         return super().keyPressEvent(key_event)
 
+    def open_links_settings(self):
+        self.linkssettings = LinksSettings(self.parser)
+        self.linkssettings.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.linkssettings.show()
+
 if __name__=="__main__":
     parser = ConfigParser()
-    parser.read(CONFIG_NAME)
+    parser.read(APP_CONFIG)
     app = QApplication(sys.argv)
     widget = Settings(parser)
     widget.show()

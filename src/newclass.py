@@ -15,12 +15,13 @@ try:
     from db.manager import *
     from db.tables import *
     from src.addstudent import AddStudent
+    from src.constants import *
     import rc.resources
-except:
+except ModuleNotFoundError:
     import sys, os
     sys.path.insert(0, os.path.dirname(sys.path[0]))
     from configparser import ConfigParser
-    from src.constants import CONFIG_NAME
+    from constants import *
     from db.manager import *
     from db.tables import *
     from src.addstudent import AddStudent
@@ -198,7 +199,7 @@ class NewClass(QWidget):
 
 if __name__=="__main__":
     parser = ConfigParser()
-    parser.read(CONFIG_NAME)
+    parser.read(APP_CONFIG)
     manager = Manager(parser)
     app = QApplication(sys.argv)
     widget = NewClass(manager)

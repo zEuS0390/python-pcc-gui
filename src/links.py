@@ -6,6 +6,20 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 import webbrowser
 
+try:
+    from src.constants import *
+except:
+    import sys, os
+    sys.path.insert(0, os.path.dirname(sys.path[0]))
+    from constants import *
+    import rc.resources
+
+class LinkButton(QPushButton):
+
+    def __init__(self, link_url, *args, parent=None):
+        super(LinkButton, self).__init__(*args, parent)
+        self.link_url = link_url
+
 class Links(QWidget):
 
     def __init__(self, parser, parent=None):
@@ -25,42 +39,26 @@ class Links(QWidget):
         self.setMinimumWidth(320)
 
     def setup_btns(self):
-        self.btns_conf = {
-            "login": ("LOGIN", self.login_link),
-            "logout": ("LOGOUT", self.logout_link),
-            "recommendations": ("RECOMMENDATIONS", self.recommendations_link),
-            "coach_tracking": ("COACH TRACKING", self.coach_tracking_link)
-        }
-        self.btns = {}
-        for name, val in self.btns_conf.items():
-            btn = QPushButton(val[0])
-            btn.clicked.connect(val[1])
+        self.link_names = [item.strip() for item in self.parser.get("list", "names").split(",")]
+        for link_name in self.link_names:
+            btn = LinkButton(link_name, link_name.replace("_", " ").upper())
+            btn.clicked.connect(self.open_link)
             self.btnslayout.addWidget(btn)
-            self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)
 
-    def login_link(self):
-        webbrowser.open(self.parser.get("links", "login"))
-        self.close()
-
-    def logout_link(self):
-        webbrowser.open(self.parser.get("links", "logout"))
-        self.close()
-
-    def recommendations_link(self):
-        webbrowser.open(self.parser.get("links", "recommendations"))
-        self.close()
-
-    def coach_tracking_link(self):
-        webbrowser.open(self.parser.get("links", "coach_tracking"))
-        self.close()
+    def open_link(self):
+        name = self.sender().link_url
+        if self.parser.has_option("urls", name):
+            if len(self.parser.get("urls", name)) > 0:
+                webbrowser.open(self.parser.get("urls", name))
+                self.close()
 
 if __name__=="__main__":
     import sys, os
     from configparser import ConfigParser
     sys.path.insert(0, os.path.dirname(sys.path[0]))
     parser = ConfigParser()
-    parser.read("cfg/app.cfg")
+    parser.read(LINKS_CONFIG)
     app = QApplication(sys.argv)
     widget = Links(parser)
     widget.show()

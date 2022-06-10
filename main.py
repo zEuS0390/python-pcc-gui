@@ -3,12 +3,12 @@ from PyQt5.QtWidgets import (
 )
 from configparser import ConfigParser
 from src.app import MainWindow
-from src.constants import CONFIG_NAME, LOG_NAME
+from src.constants import *
 import sys, rc.resources, logging
 
 if __name__=="__main__":
     parser = ConfigParser()
-    parser.read(CONFIG_NAME)
+    parser.read([APP_CONFIG, LINKS_CONFIG])
     if parser.getboolean("application", "debug"):
         logging.basicConfig(
             filename=LOG_NAME, 

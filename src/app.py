@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt
 from .settings import Settings
 from .links import Links
 from db.manager import Manager
-from .constants import CONFIG_NAME
+from .constants import *
 
 class MainWindow(QMainWindow):
 
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
         self.settings.show()
 
     def apply_settings(self):
-        self.parser.read(CONFIG_NAME)
+        self.parser.read(APP_CONFIG)
         self.setWindowTitle(self.parser.get("application", "title"))
         self.hdr_title.setText(self.parser.get("application", "header_title"))
 
