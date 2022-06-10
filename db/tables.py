@@ -7,13 +7,15 @@ class Student(base):
 
     __tablename__ = "student"
     student_id = Column(Integer, primary_key=True)
+    handledclass_id = Column(Integer, ForeignKey("handledclass.handledclass_id"))
     fname = Column(VARCHAR(200))
     mname = Column(VARCHAR(200))
     lname = Column(VARCHAR(200))
+    gender = Column(VARCHAR(200))
     age = Column(Integer)
 
     def __repr__(self):
-        return f"Student(student_id={self.student_id}, fname='{self.fname}', mname='{self.mname}', lname='{self.lname}')"
+        return f"Student(student_id={self.student_id}, fname='{self.fname}', mname='{self.mname}', lname='{self.lname}', gender='{self.gender}', age={self.age})"
 
 class Course(base):
 
@@ -28,5 +30,8 @@ class Course(base):
 class HandledClass(base):
 
     __tablename__ = "handledclass"
-    class_id = Column(Integer, primary_key=True)
+    handledclass_id = Column(Integer, primary_key=True)
     course_id = Column(Integer, ForeignKey("course.course_id"))
+    schedule = Column(VARCHAR(200))
+    sessions = Column(Integer, default=10)
+    students = relationship("Student", backref="handledclass", cascade="all, delete-orphan")

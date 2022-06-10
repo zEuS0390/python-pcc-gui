@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QGridLayout, QLabel,
@@ -6,9 +7,14 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-from configparser import ConfigParser
-from .constants import *
-import sys
+
+try:
+    from .constants import *
+except:
+    import sys, os
+    sys.path.insert(0, os.path.dirname(sys.path[0]))
+    from src.constants import *
+    import rc.resources
 
 class Settings(QWidget):
 
@@ -17,7 +23,7 @@ class Settings(QWidget):
     def __init__(self, parser, parent=None):
         super(Settings, self).__init__(parent)
         self.parser = parser
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setup_UI()
         self.destroyed.connect(Settings._on_destroyed)
 
@@ -91,3 +97,11 @@ class Settings(QWidget):
         elif key_event.key() == Qt.Key.Key_Escape:
             self.close()
         return super().keyPressEvent(key_event)
+
+if __name__=="__main__":
+    parser = ConfigParser()
+    parser.read(CONFIG_NAME)
+    app = QApplication(sys.argv)
+    widget = Settings(parser)
+    widget.show()
+    sys.exit(app.exec())

@@ -3,5 +3,9 @@
     <qresource>
         <file alias="app_icon.png">../img/app_icon.png</file>
         <file alias="gear_icon.png">../img/gear_icon.png</file>
+        <file alias="book_icon.png">../img/book_icon.png</file>
+        <file alias="new_student.png">../img/new_student.png</file>
+        <file alias="add_class.png">../img/add_class.png</file>
+        <file alias="add_student.png">../img/add_student.png</file>
     </qresource>
 </RCC>
