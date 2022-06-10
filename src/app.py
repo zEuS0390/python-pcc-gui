@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QPushButton,
     QVBoxLayout, QWidget,
-    QLabel
+    QLabel, QHBoxLayout
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from .settings import Settings
+from db.manager import Manager
+from .constants import CONFIG_NAME
 
 class MainWindow(QMainWindow):
 
@@ -14,7 +16,17 @@ class MainWindow(QMainWindow):
         self.parser = parser
         self.setup_UI()
 
+    def keyPressEvent(self, key_event):
+        if key_event.key() == Qt.Key.Key_Escape:
+            self.close()
+        elif key_event.key() == Qt.Key.Key_S:
+            self.open_settings()
+        return super().keyPressEvent(key_event)
+
     def setup_UI(self):
+
+        self.db = Manager(self.parser)
+
         self.setWindowIcon(QIcon(":/app_icon.png"))
         self.setWindowTitle(self.parser.get("application", "title"))
         self.resize(640, 480)
@@ -24,17 +36,21 @@ class MainWindow(QMainWindow):
         self.mainwidget.setLayout(self.mainlayout)
         self.setCentralWidget(self.mainwidget)
 
+        self.contentlayout = QHBoxLayout()
+        self.sidebarlayout = QVBoxLayout()
         self.btnslayout = QVBoxLayout()
         self.hdrlayout = QVBoxLayout()
 
         self.setup_hdr()
         self.setup_btns()
 
+        self.mainlayout.addLayout(self.contentlayout)
+        self.mainlayout.addLayout(self.sidebarlayout)
+
     def setup_hdr(self):
-        hdr_title = QLabel(self.parser.get("application", "header_title"))
+        self.hdr_title = QLabel(self.parser.get("application", "header_title"))
         self.hdrlayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.hdrlayout.addWidget(hdr_title)
-        self.mainlayout.addStretch()
+        self.hdrlayout.addWidget(self.hdr_title)
         self.mainlayout.addLayout(self.hdrlayout)
 
     def setup_btns(self):
@@ -48,11 +64,17 @@ class MainWindow(QMainWindow):
             btn.clicked.connect(func)
             self.btnslayout.addWidget(btn)
             self.btns.append(btn)
-        self.mainlayout.addStretch()
-        self.mainlayout.addLayout(self.btnslayout)
-        self.mainlayout.addStretch()
+        self.sidebarlayout.addStretch()
+        self.sidebarlayout.addLayout(self.btnslayout)
+        self.sidebarlayout.addStretch()
 
     def open_settings(self):
         self.settings = Settings(self.parser)
         self.settings.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.settings.apply_settings.connect(self.apply_settings)
         self.settings.show()
+
+    def apply_settings(self):
+        self.parser.read(CONFIG_NAME)
+        self.setWindowTitle(self.parser.get("application", "title"))
+        self.hdr_title.setText(self.parser.get("application", "header_title"))

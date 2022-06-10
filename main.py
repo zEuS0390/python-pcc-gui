@@ -3,11 +3,20 @@ from PyQt5.QtWidgets import (
 )
 from configparser import ConfigParser
 from src.app import MainWindow
-import sys, rc.resources
+from src.constants import CONFIG_NAME, LOG_NAME
+import sys, rc.resources, logging
 
 if __name__=="__main__":
     parser = ConfigParser()
-    parser.read("cfg/app.cfg")
+    parser.read(CONFIG_NAME)
+    if parser.getboolean("application", "debug"):
+        logging.basicConfig(
+            filename=LOG_NAME, 
+            format="[%(asctime)s] [%(levelname)s]: %(message)s",
+            datefmt="%m-%d-%Y %H:%M:%S",
+            encoding="utf-8", 
+            level=logging.DEBUG
+        )
     app = QApplication(sys.argv)
     mainwindow = MainWindow(parser)
     mainwindow.show()

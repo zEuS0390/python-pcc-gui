@@ -5,11 +5,14 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QPushButton
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from configparser import ConfigParser
+from .constants import *
 import sys
 
 class Settings(QWidget):
+
+    apply_settings = pyqtSignal()
 
     def __init__(self, parser, parent=None):
         super(Settings, self).__init__(parent)
@@ -36,7 +39,8 @@ class Settings(QWidget):
     def setup_inputs(self):
         self.inputs_conf = {
             "app_title": ("App Title:\t", QLineEdit),
-            "header_title": ("Header Title:\t", QLineEdit)
+            "header_title": ("Header Title:\t", QLineEdit),
+            "email": ("Email:\t", QLineEdit)
         }
         self.inputs = {}
         row = 0
@@ -57,11 +61,12 @@ class Settings(QWidget):
 
         self.inputs["app_title"][1].setText(self.parser.get("application", "title"))
         self.inputs["header_title"][1].setText(self.parser.get("application", "header_title"))
+        self.inputs["email"][1].setText(self.parser.get("mail", "email"))
 
     def setup_btns(self):
         self.btns_conf = {
             "cancel": ("Cancel", self.close),
-            "submit": ("Submit", lambda: None)
+            "submit": ("Apply", self.apply)
         }
         self.btns = {}
         for name, val in self.btns_conf.items():
@@ -71,10 +76,18 @@ class Settings(QWidget):
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)
 
-if __name__=="__main__":
-    parser = ConfigParser()
-    parser.read("cfg/app.cfg")
-    app = QApplication(sys.argv)
-    widget = Settings(parser)
-    widget.show()
-    sys.exit(app.exec())
+    def apply(self):
+        self.parser.set("application", "title", self.inputs["app_title"][1].text())
+        self.parser.set("application", "header_title", self.inputs["header_title"][1].text())
+        self.parser.set("application", "email", self.inputs["email"][1].text())
+        with open(CONFIG_NAME, "w") as cfgfile:
+            self.parser.write(cfgfile)
+        self.apply_settings.emit()
+        self.close()
+
+    def keyPressEvent(self, key_event):
+        if key_event.key() == Qt.Key.Key_Return:
+            self.apply()
+        elif key_event.key() == Qt.Key.Key_Escape:
+            self.close()
+        return super().keyPressEvent(key_event)
