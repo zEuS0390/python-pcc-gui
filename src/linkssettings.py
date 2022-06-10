@@ -46,7 +46,7 @@ class LinksSettings(QWidget):
         self.urllist = QListWidget()
         self.urllist.itemClicked.connect(
             lambda: self.urllink.setText(
-                self.parser.get("urls", self.urllist.currentItem().text())
+                self.parser.get("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
             )
         )
         self.urllink = QLineEdit()
@@ -80,7 +80,7 @@ class LinksSettings(QWidget):
 
     def apply(self):
         if self.urllist.currentItem() is not None:
-            self.parser.set("urls", self.urllist.currentItem().text(), self.urllink.text())
+            self.parser.set("urls", self.urllist.currentItem().text().replace(" ", "_").lower(), self.urllink.text())
             with open(APP_CONFIG, "w") as cfgfile:
                 self.parser.write(cfgfile)
         self.close_links.emit()
@@ -89,7 +89,7 @@ class LinksSettings(QWidget):
     def delete_url_link(self):
         if self.urllist.currentItem() is not None:
             self.urllink.clear()
-            self.parser.remove_option("urls", self.urllist.currentItem().text())
+            self.parser.remove_option("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
             self.urllist.takeItem(self.urllist.currentRow())
             with open(APP_CONFIG, "w") as cfgfile:
                 self.parser.write(cfgfile)
@@ -98,7 +98,7 @@ class LinksSettings(QWidget):
     def update_url_list(self):
         self.urllist.clear()
         for link_name, url_link in self.parser.items("urls"):
-            self.urllist.addItem(QListWidgetItem(link_name))
+            self.urllist.addItem(QListWidgetItem(link_name.replace("_", " ").upper()))
 
     def open_add_new_link(self):
         self.newlink = NewLink(self.parser)
