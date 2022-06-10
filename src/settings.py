@@ -41,6 +41,7 @@ class Settings(QWidget):
         self.setup_btns()
         self.setLayout(self.mainlayout)
         self.resize(self.mainlayout.sizeHint())
+        self.setMinimumWidth(320)
 
     def setup_inputs(self):
         self.inputs_conf = {
