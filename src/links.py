@@ -29,6 +29,11 @@ class Links(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.parser = parser
         self.setup_UI()
+        self.destroyed.connect(Links._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("Links instance deleted.")
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/hyperlink.png"))

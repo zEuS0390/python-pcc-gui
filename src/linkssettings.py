@@ -28,6 +28,11 @@ class LinksSettings(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.parser = parser
         self.setup_UI()
+        self.destroyed.connect(LinksSettings._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("LinksSettings instance deleted.")
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/hyperlink.png"))
@@ -56,8 +61,7 @@ class LinksSettings(QWidget):
 
     def setup_btns(self):
         self.btns_conf = {
-            "cancel": ("Cancel", self.cancel),
-            "submit": ("Apply", self.apply)
+            "submit": ("Update", self.update)
         }
         self.btns = {}
         self.btns["new"] = QPushButton("New")
@@ -74,17 +78,17 @@ class LinksSettings(QWidget):
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)
 
-    def cancel(self):
+    def closeEvent(self, event):
         self.close_links.emit()
-        self.close()
+        return super().closeEvent(event)
 
-    def apply(self):
+    def update(self):
         if self.urllist.currentItem() is not None:
             self.parser.set("urls", self.urllist.currentItem().text().replace(" ", "_").lower(), self.urllink.text())
             with open(APP_CONFIG, "w") as cfgfile:
                 self.parser.write(cfgfile)
-        self.close_links.emit()
-        self.close()
+            self.close_links.emit()
+            self.close()
 
     def delete_url_link(self):
         if self.urllist.currentItem() is not None:

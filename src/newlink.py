@@ -28,6 +28,11 @@ class NewLink(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.parser = parser
         self.setup_UI()
+        self.destroyed.connect(NewLink._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("NewLink instance deleted.")
 
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key.Key_Return:
@@ -74,7 +79,7 @@ class NewLink(QWidget):
 
     def setup_btns(self):
         self.btns_conf = {
-            "cancel": ("Cancel", self.cancel),
+            "cancel": ("Cancel", self.close),
             "submit": ("Add", self.add)
         }
         self.btns = {}
@@ -85,19 +90,20 @@ class NewLink(QWidget):
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)
 
-    def cancel(self):
+    def closeEvent(self, event):
         self.open_link_settings.emit()
-        self.close()
+        return super().closeEvent(event)
 
     def add(self):
         link_name = self.inputs["link_name"][1].text()
         url_link = self.inputs["url_link"][1].text()
-        self.parser.set("urls", link_name.replace(" ", "_").lower(), url_link)
-        with open(APP_CONFIG, "w") as cfgfile:
-            self.parser.write(cfgfile)
-        self.update_url_list.emit()
-        self.open_link_settings.emit()
-        self.close()
+        if len(link_name) > 0 and len(url_link) > 0:
+            self.parser.set("urls", link_name.replace(" ", "_").lower(), url_link)
+            with open(APP_CONFIG, "w") as cfgfile:
+                self.parser.write(cfgfile)
+            self.update_url_list.emit()
+            self.open_link_settings.emit()
+            self.close()
 
 if __name__=="__main__":
     parser = ConfigParser()
