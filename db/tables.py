@@ -22,7 +22,7 @@ class Course(base):
     __tablename__ = "course"
     course_id = Column(Integer, primary_key=True)
     name = Column(VARCHAR(200))
-    handledclass = relationship("HandledClass", backref="course", cascade="all, delete-orphan")
+    handledclasses = relationship("HandledClass", backref="course", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"Course(course_id={self.course_id}, name='{self.name}')"
@@ -33,5 +33,6 @@ class HandledClass(base):
     handledclass_id = Column(Integer, primary_key=True)
     course_id = Column(Integer, ForeignKey("course.course_id"))
     schedule = Column(VARCHAR(200))
+    time = Column(VARCHAR(200))
     sessions = Column(Integer, default=10)
     students = relationship("Student", backref="handledclass", cascade="all, delete-orphan")

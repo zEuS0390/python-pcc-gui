@@ -26,6 +26,13 @@ except:
     from src.addstudent import AddStudent
     import rc.resources
 
+class IndexButton(QPushButton):
+
+    def __init__(self, id, *args, parent=None):
+        super(IndexButton, self).__init__(*args, parent)
+        self.id = id
+
+
 class NewClass(QWidget):
 
     def __init__(self, db: Manager, parent=None):
@@ -51,7 +58,7 @@ class NewClass(QWidget):
 
         self.setLayout(self.mainlayout)
 
-        self.resize(self.mainlayout.sizeHint())
+        self.resize(640, 480)
 
     def setup_inputs(self):
         self.inputs_conf = {
@@ -87,12 +94,14 @@ class NewClass(QWidget):
 
     def setup_students_table(self):
         self.student_ids = []
+        self.students_in_table = []
         table_headers = {
             "fname": "First Name",
             "mname": "Middle Name",
             "lname": "Last Name",
             "gender": "Gender",
-            "age": "Age"
+            "age": "Age",
+            "actions": "Actions"
         }
         self.studentstable = QTableWidget()
         self.studentstable.setColumnCount(len(table_headers))
@@ -136,10 +145,15 @@ class NewClass(QWidget):
 
     def update_student_table(self, added_student_id: int):
         if added_student_id not in self.student_ids:
+            self.student_ids.append(added_student_id)
+
+        if added_student_id not in self.students_in_table:
+            self.students_in_table.append(added_student_id)
             student = get_student(self.db, added_student_id)
             if student is not None:
                 row = self.studentstable.rowCount()
                 self.studentstable.setRowCount(row+1)
+                delaction = IndexButton(added_student_id, "Delete")
                 fname = QTableWidgetItem(student.fname)
                 fname.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 mname = QTableWidgetItem(student.mname)
@@ -155,7 +169,16 @@ class NewClass(QWidget):
                 self.studentstable.setItem(row, 2, lname)
                 self.studentstable.setItem(row, 3, age)
                 self.studentstable.setItem(row, 4, gender)
-            self.student_ids.append(student.student_id)
+                self.studentstable.setCellWidget(row, 5, delaction)
+                delaction.clicked.connect(self.delete_added_student)
+
+    def delete_added_student(self):
+        sender_id = self.sender().id
+        self.student_ids.remove(sender_id)
+        self.students_in_table.clear()
+        self.studentstable.setRowCount(0)
+        for student_id in self.student_ids:
+            self.update_student_table(student_id)
 
     def update_combobox(self):
         self.inputs["course"][1].clear()
@@ -163,7 +186,15 @@ class NewClass(QWidget):
         self.inputs["course"][1].addItems(courses)
 
     def add(self):
-        pass
+        add_handled_class(
+            self.db,
+            course=self.inputs["course"][1].currentText(),
+            student_ids=self.student_ids,
+            sessions=self.inputs["sessions"][1].text(),
+            schedule=self.inputs["schedule"][1].text(),
+            time=self.inputs["time"][1].text()
+        )
+        self.close()
 
 if __name__=="__main__":
     parser = ConfigParser()

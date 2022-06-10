@@ -24,3 +24,25 @@ def get_students_in_class(db: Manager, handledclass_id: int):
 
 def get_courses(db: Manager):
     return db.session.query(Course).all()
+
+def add_handled_class(db: Manager, **kwargs):
+    course_name = kwargs["course"]
+    student_ids = kwargs["student_ids"]
+    sessions = kwargs["sessions"]
+    schedule = kwargs["schedule"]
+    time = kwargs["time"]
+    handledclass = HandledClass()
+    handledclass.sessions = sessions
+    handledclass.schedule = schedule
+    handledclass.time = time
+    for student_id in student_ids:
+        student = db.session.query(Student).filter(Student.student_id==student_id).first()
+        handledclass.students.append(student)
+    course = db.session.query(Course).filter(Course.name==course_name).first()
+    course.handledclasses.append(handledclass)
+    db.session.add(course)
+    db.session.add(handledclass)
+    db.session.commit()
+    db.session.close()
+
+
