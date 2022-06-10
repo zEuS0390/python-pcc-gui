@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from .settings import Settings
+from .links import Links
 from db.manager import Manager
 from .constants import CONFIG_NAME
 
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow):
     def setup_btns(self):
         self.btns_conf = {
             "Class": lambda: print(True),
+            "Links": self.open_links,
             "Settings": self.open_settings
         }
         self.btns = []
@@ -78,3 +80,8 @@ class MainWindow(QMainWindow):
         self.parser.read(CONFIG_NAME)
         self.setWindowTitle(self.parser.get("application", "title"))
         self.hdr_title.setText(self.parser.get("application", "header_title"))
+
+    def open_links(self):
+        self.links = Links(self.parser)
+        self.links.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.links.show()
