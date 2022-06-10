@@ -8,7 +8,7 @@ import sys, rc.resources, logging
 
 if __name__=="__main__":
     parser = ConfigParser()
-    parser.read([APP_CONFIG, LINKS_CONFIG])
+    parser.read(APP_CONFIG)
     if parser.getboolean("application", "debug"):
         logging.basicConfig(
             filename=LOG_NAME, 
