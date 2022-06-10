@@ -16,9 +16,9 @@ except:
 
 class LinkButton(QPushButton):
 
-    def __init__(self, link_url, *args, parent=None):
+    def __init__(self, url_link, *args, parent=None):
         super(LinkButton, self).__init__(*args, parent)
-        self.link_url = link_url
+        self.url_link = url_link
 
 class Links(QWidget):
 
@@ -39,19 +39,16 @@ class Links(QWidget):
         self.setMinimumWidth(320)
 
     def setup_btns(self):
-        self.link_names = [item.strip() for item in self.parser.get("list", "names").split(",")]
-        for link_name in self.link_names:
-            btn = LinkButton(link_name, link_name.replace("_", " ").upper())
+        for link_name, url_link in self.parser.items("urls"):
+            btn = LinkButton(url_link, link_name.replace("_", " ").upper())
             btn.clicked.connect(self.open_link)
             self.btnslayout.addWidget(btn)
         self.mainlayout.addLayout(self.btnslayout)
 
     def open_link(self):
-        name = self.sender().link_url
-        if self.parser.has_option("urls", name):
-            if len(self.parser.get("urls", name)) > 0:
-                webbrowser.open(self.parser.get("urls", name))
-                self.close()
+        url_link = self.sender().url_link
+        webbrowser.open(url_link)
+        self.close()
 
 if __name__=="__main__":
     import sys, os

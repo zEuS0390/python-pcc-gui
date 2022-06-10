@@ -63,6 +63,9 @@ class LinksSettings(QWidget):
     def apply(self):
         pass
 
+    def update_url_list(self):
+        pass
+
 if __name__=="__main__":
     parser = ConfigParser()
     parser.read(LINKS_CONFIG)
