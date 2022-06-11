@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QComboBox
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import logging
 
 try:
@@ -25,11 +25,18 @@ except ModuleNotFoundError:
 
 class NewCourse(QWidget):
 
+    update_list = pyqtSignal()
+
     def __init__(self, db: Manager, parent=None):
         super(NewCourse, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.db = db
         self.setup_UI()
+        self.destroyed.connect(NewCourse._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("NewCourse instance deleted.")
 
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key.Key_Return:
@@ -96,6 +103,7 @@ class NewCourse(QWidget):
             part=self.inputs["course_part"][1].currentText(),
             desc=self.inputs["course_desc"][1].text()
         )
+        self.update_list.emit()
         self.close()
 
     def update_combobox(self):

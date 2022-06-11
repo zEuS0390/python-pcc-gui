@@ -9,5 +9,6 @@
         <file alias="add_student.png">../img/add_student.png</file>
         <file alias="classes.png">../img/classes.png</file>
         <file alias="hyperlink.png">../img/hyperlink.png</file>
+        <file alias="student.png">../img/student.png</file>
     </qresource>
 </RCC>

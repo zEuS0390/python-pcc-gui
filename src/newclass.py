@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import logging
 
 try:
@@ -40,6 +40,8 @@ class IndexButton(QPushButton):
 
 
 class NewClass(QWidget):
+
+    update_list = pyqtSignal()
 
     def __init__(self, db: Manager, parent=None):
         super(NewClass, self).__init__(parent)
@@ -205,6 +207,7 @@ class NewClass(QWidget):
             schedule=self.inputs["schedule"][1].text(),
             time=self.inputs["time"][1].text()
         )
+        self.update_list.emit()
         self.close()
 
 if __name__=="__main__":

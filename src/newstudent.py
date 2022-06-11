@@ -31,6 +31,11 @@ class NewStudent(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.db = db
         self.setup_UI()
+        self.destroyed.connect(NewStudent._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("NewStudent instance deleted.")
 
     def keyPressEvent(self, key_event):
         if key_event.key() == Qt.Key.Key_Return:
@@ -49,6 +54,7 @@ class NewStudent(QWidget):
         self.setup_btns()
         self.setLayout(self.mainlayout)
         self.resize(self.mainlayout.sizeHint())
+        self.setMinimumWidth(320)
 
     def setup_inputs(self):
         self.inputs_conf = {
@@ -56,7 +62,8 @@ class NewStudent(QWidget):
             "mname": ("Middle Name:", QLineEdit),
             "lname": ("Last Name:", QLineEdit),
             "gender": ("Gender:", QComboBox),
-            "age": ("Age:", QLineEdit)
+            "age": ("Age:", QLineEdit),
+            "email": ("Emai:", QLineEdit)
         }
         self.inputs = {}
         row = 0
@@ -99,7 +106,8 @@ class NewStudent(QWidget):
             mname=self.inputs["mname"][1].text(), 
             lname=self.inputs["lname"][1].text(),
             gender=self.inputs["gender"][1].currentText(),
-            age=int(self.inputs["age"][1].text())
+            age=int(self.inputs["age"][1].text()),
+            email=self.inputs["email"][1].text()
         )
         self.db.session.add(student)
         self.db.session.commit()

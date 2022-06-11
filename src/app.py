@@ -5,8 +5,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+from .handledclasses import HandledClasses
 from .preferences import Preferences
 from .links import Links
+from .students import Students
+from .courses import Courses
 from db.manager import Manager
 from .constants import *
 
@@ -56,8 +59,10 @@ class MainWindow(QMainWindow):
 
     def setup_btns(self):
         self.btns_conf = {
-            "Class": lambda: print(True),
-            "Links": self.open_links,
+            "Handled Classes": self.open_classes,
+            "Registered Courses": self.open_courses,
+            "List of Students": self.open_students,
+            "URL Links": self.open_links,
             "Preferences": self.open_settings
         }
         self.btns = []
@@ -69,6 +74,11 @@ class MainWindow(QMainWindow):
         self.sidebarlayout.addStretch()
         self.sidebarlayout.addLayout(self.btnslayout)
         self.sidebarlayout.addStretch()
+
+    def open_classes(self):
+        self.classes = HandledClasses(self.db)
+        self.classes.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.classes.show()
 
     def open_settings(self):
         self.preferences = Preferences(self.parser)
@@ -85,3 +95,13 @@ class MainWindow(QMainWindow):
         self.links = Links(self.parser)
         self.links.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.links.show()
+
+    def open_students(self):
+        self.students = Students(self.db)
+        self.students.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.students.show()
+    
+    def open_courses(self):
+        self.courses = Courses(self.db)
+        self.courses.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.courses.show()

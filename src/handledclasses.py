@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QTableWidget,
     QAbstractScrollArea, QAbstractItemView,
     QHeaderView, QTableWidgetItem,
-    QPushButton
+    QPushButton, QHBoxLayout
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt
 try:
     from db.manager import *
     from db.tables import *
+    from src.newclass import NewClass
     import rc.resources
 except:
     import sys, os
@@ -19,14 +20,21 @@ except:
     from src.constants import *
     from db.manager import *
     from db.tables import *
+    from newclass import NewClass
     import rc.resources
 
-class Classes(QWidget):
+class HandledClasses(QWidget):
 
     def __init__(self, db, parent=None):
-        super(Classes, self).__init__(parent)
+        super(HandledClasses, self).__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.db = db
         self.setup_UI()
+        self.destroyed.connect(HandledClasses._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("Classes instance deleted.")
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/classes.png"))
@@ -34,12 +42,14 @@ class Classes(QWidget):
 
         self.mainlayout = QVBoxLayout()
         self.classestablelayout = QVBoxLayout()
+        self.tablebtnslayout = QHBoxLayout()
 
+        self.setup_table_btns()
         self.setup_classes_table()
 
         self.setLayout(self.mainlayout)
         self.resize(self.mainlayout.sizeHint())
-        self.setMinimumWidth(640)
+        self.setMinimumSize(640, 480)
 
     def setup_classes_table(self):
         classestable_headers = {
@@ -72,10 +82,10 @@ class Classes(QWidget):
         self.update_classes_table()
 
     def update_classes_table(self):
+        self.classestable.setRowCount(0)
         handled_classes = get_handled_classes(self.db)
         self.classestable.setRowCount(len(handled_classes))
         for row, handled_class in enumerate(handled_classes):
-            print(handled_class)
             open_btn = QPushButton("Open")
             archive_btn = QPushButton("Archive")
             course = QTableWidgetItem("{}-{}".format(handled_class.course.name, handled_class.course.part))
@@ -84,7 +94,7 @@ class Classes(QWidget):
             schedule.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             hctime = QTableWidgetItem(handled_class.time)
             hctime.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            days = QTableWidgetItem(str(handled_class.sessions))
+            days = QTableWidgetItem("{}/{}".format(handled_class.current_session, handled_class.sessions))
             days.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             no_of_students = QTableWidgetItem(str(len(handled_class.students)))
             no_of_students.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -96,11 +106,30 @@ class Classes(QWidget):
             self.classestable.setCellWidget(row, 5, open_btn)
             self.classestable.setCellWidget(row, 6, archive_btn)
 
+    def setup_table_btns(self):
+        self.tablebtnslayout.addStretch()
+        self.btns_conf = {
+            "new_class": ("New Class", self.open_new_class),
+        }
+        self.btns = {}
+        for name, val in self.btns_conf.items():
+            btn = QPushButton(val[0])
+            btn.clicked.connect(val[1])
+            self.tablebtnslayout.addWidget(btn)
+            self.btns[name] = btn
+        self.mainlayout.addLayout(self.tablebtnslayout)
+
+    def open_new_class(self):
+        self.newclass = NewClass(self.db)
+        self.newclass.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.newclass.update_list.connect(self.update_classes_table)
+        self.newclass.show()
+
 if __name__=="__main__":
     parser = ConfigParser()
     parser.read(APP_CONFIG)
     manager = Manager(parser)
     app = QApplication(sys.argv)
-    widget = Classes(manager)
+    widget = HandledClasses(manager)
     widget.show()
     sys.exit(app.exec())
