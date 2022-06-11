@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
-from .settings import Settings
+from .preferences import Preferences
 from .links import Links
 from db.manager import Manager
 from .constants import *
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.btns_conf = {
             "Class": lambda: print(True),
             "Links": self.open_links,
-            "Settings": self.open_settings
+            "Preferences": self.open_settings
         }
         self.btns = []
         for name, func in self.btns_conf.items():
@@ -71,12 +71,12 @@ class MainWindow(QMainWindow):
         self.sidebarlayout.addStretch()
 
     def open_settings(self):
-        self.settings = Settings(self.parser)
-        self.settings.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.settings.apply_settings.connect(self.apply_settings)
-        self.settings.show()
+        self.preferences = Preferences(self.parser)
+        self.preferences.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.preferences.apply_preferences.connect(self.apply_preferences)
+        self.preferences.show()
 
-    def apply_settings(self):
+    def apply_preferences(self):
         self.parser.read(APP_CONFIG)
         self.setWindowTitle(self.parser.get("application", "title"))
         self.hdr_title.setText(self.parser.get("application", "header_title"))

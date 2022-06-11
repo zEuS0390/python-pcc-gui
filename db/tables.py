@@ -22,6 +22,8 @@ class Course(base):
     __tablename__ = "course"
     course_id = Column(Integer, primary_key=True)
     name = Column(VARCHAR(200))
+    part = Column(VARCHAR(200))
+    desc = Column(VARCHAR(200))
     handledclasses = relationship("HandledClass", backref="course", cascade="all, delete-orphan")
 
     def __repr__(self):

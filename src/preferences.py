@@ -16,16 +16,16 @@ except:
     from constants import *
     import rc.resources
 
-class Settings(QWidget):
+class Preferences(QWidget):
 
-    apply_settings = pyqtSignal()
+    apply_preferences = pyqtSignal()
 
     def __init__(self, parser, parent=None):
-        super(Settings, self).__init__(parent)
+        super(Preferences, self).__init__(parent)
         self.parser = parser
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setup_UI()
-        self.destroyed.connect(Settings._on_destroyed)
+        self.destroyed.connect(Preferences._on_destroyed)
 
     @staticmethod
     def _on_destroyed():
@@ -33,7 +33,7 @@ class Settings(QWidget):
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/gear_icon.png"))
-        self.setWindowTitle("Settings")
+        self.setWindowTitle("Preferences")
         self.mainlayout = QVBoxLayout()
         self.inputslayout = QGridLayout()
         self.btnslayout = QHBoxLayout()
@@ -91,7 +91,7 @@ class Settings(QWidget):
         self.parser.set("mail", "email", self.inputs["email"][1].text())
         with open(APP_CONFIG, "w") as cfgfile:
             self.parser.write(cfgfile)
-        self.apply_settings.emit()
+        self.apply_preferences.emit()
         self.close()
 
     def keyPressEvent(self, key_event):
@@ -105,6 +105,6 @@ if __name__=="__main__":
     parser = ConfigParser()
     parser.read(APP_CONFIG)
     app = QApplication(sys.argv)
-    widget = Settings(parser)
+    widget = Preferences(parser)
     widget.show()
     sys.exit(app.exec())

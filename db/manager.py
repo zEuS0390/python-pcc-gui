@@ -25,6 +25,18 @@ def get_students_in_class(db: Manager, handledclass_id: int):
 def get_courses(db: Manager):
     return db.session.query(Course).all()
 
+def get_handled_classes(db: Manager):
+    return db.session.query(HandledClass).all()
+
+def add_new_course(db: Manager, **kwargs):
+    name = kwargs["name"]
+    part = kwargs["part"]
+    desc= kwargs["desc"]
+    course = Course(name=name, part=part, desc=desc)
+    db.session.add(course)
+    db.session.commit()
+    db.session.close()
+
 def add_handled_class(db: Manager, **kwargs):
     course_name = kwargs["course"]
     student_ids = kwargs["student_ids"]

@@ -2,14 +2,15 @@ from PyQt5.QtWidgets import (
     QWidget, QGridLayout,
     QVBoxLayout, QApplication,
     QLineEdit, QLabel,
-    QHBoxLayout, QPushButton
+    QHBoxLayout, QPushButton,
+    QComboBox
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 import logging
 
 try:
-    from db.manager import Manager
+    from db.manager import *
     from db.tables import *
     from src.constants import *
     import rc.resources
@@ -18,7 +19,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, os.path.dirname(sys.path[0]))
     from configparser import ConfigParser
     from constants import *
-    from db.manager import Manager
+    from db.manager import *
     from db.tables import *
     import rc.resources
 
@@ -44,15 +45,15 @@ class NewCourse(QWidget):
         self.inputslayout = QGridLayout()
         self.btnslayout = QHBoxLayout()
         self.setLayout(self.mainlayout)
-
         self.setup_inputs()
         self.setup_btns()
-
         self.resize(self.mainlayout.sizeHint())
 
     def setup_inputs(self):
         self.inputs_conf = {
-            "course_title": ("Course Title:\t", QLineEdit)
+            "course_title": ("Course Title:", QLineEdit),
+            "course_part": ("Course Part:", QComboBox),
+            "course_desc": ("Course Description", QLineEdit)
         }
         self.inputs = {}
         row = 0
@@ -64,12 +65,16 @@ class NewCourse(QWidget):
             col += 1
             if val[1] == QLineEdit:
                 obj = val[1]()
+            elif val[1] == QComboBox:
+                obj = val[1]()
             self.inputslayout.addWidget(label, row, col)
             col += 1
             self.inputslayout.addWidget(obj, row, col)
             self.inputs[name] = (label, obj)
             row += 1
         self.mainlayout.addLayout(self.inputslayout)
+
+        self.update_combobox()
 
     def setup_btns(self):
         self.btns_conf = {
@@ -85,12 +90,18 @@ class NewCourse(QWidget):
         self.mainlayout.addLayout(self.btnslayout)
 
     def add(self):
-        course = Course(name=self.inputs["course_title"][1].text())
-        self.db.session.add(course)
-        self.db.session.commit()
-        self.db.session.close()
-        logging.info("Course '{course_title}' has successfully been added.".format(course_title=self.inputs["course_title"][1].text()))
+        add_new_course(
+            self.db,
+            name=self.inputs["course_title"][1].text(),
+            part=self.inputs["course_part"][1].currentText(),
+            desc=self.inputs["course_desc"][1].text()
+        )
         self.close()
+
+    def update_combobox(self):
+        self.inputs["course_part"][1].clear()
+        course_parts = ["101", "102", "103"]
+        self.inputs["course_part"][1].addItems(course_parts)
 
 if __name__=="__main__":
     parser = ConfigParser()

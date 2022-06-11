@@ -32,6 +32,11 @@ class IndexButton(QPushButton):
     def __init__(self, id, *args, parent=None):
         super(IndexButton, self).__init__(*args, parent)
         self.id = id
+        self.destroyed.connect(IndexButton._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("IndexButton instance deleted.")
 
 
 class NewClass(QWidget):
@@ -41,6 +46,11 @@ class NewClass(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.db = db
         self.setup_UI()
+        self.destroyed.connect(NewClass._on_destroyed)
+
+    @staticmethod
+    def _on_destroyed():
+        print("NewClass instance deleted.")
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/add_class.png"))
@@ -183,13 +193,13 @@ class NewClass(QWidget):
 
     def update_combobox(self):
         self.inputs["course"][1].clear()
-        courses = [course.name for course in get_courses(self.db)]
+        courses = ["{}-{}".format(course.name, course.part) for course in get_courses(self.db)]
         self.inputs["course"][1].addItems(courses)
 
     def add(self):
         add_handled_class(
             self.db,
-            course=self.inputs["course"][1].currentText(),
+            course=self.inputs["course"][1].currentText().split("-")[0],
             student_ids=self.student_ids,
             sessions=self.inputs["sessions"][1].text(),
             schedule=self.inputs["schedule"][1].text(),
