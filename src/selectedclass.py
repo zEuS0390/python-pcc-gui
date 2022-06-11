@@ -28,21 +28,7 @@ except ModuleNotFoundError:
     from src.addstudent import AddStudent
     import rc.resources
 
-class IndexButton(QPushButton):
-
-    def __init__(self, id, *args, parent=None):
-        super(IndexButton, self).__init__(*args, parent)
-        self.id = id
-        self.destroyed.connect(IndexButton._on_destroyed)
-
-    @staticmethod
-    def _on_destroyed():
-        print("IndexButton instance deleted.")
-
-
 class SelectedClass(QWidget):
-
-    update_list = pyqtSignal()
 
     def __init__(self, handledclass_id: int, db: Manager, parent=None):
         super(SelectedClass, self).__init__(parent)
@@ -57,8 +43,9 @@ class SelectedClass(QWidget):
         print("SelectedClass instance deleted.")
 
     def setup_UI(self):
+        handledclass = get_handled_class(self.db, self.handledclass_id)
         self.setWindowIcon(QIcon(":/add_class.png"))
-        self.setWindowTitle("Handled Class")
+        self.setWindowTitle("Handled Class ({} {} {})".format("{}-{}".format(handledclass.course.name, handledclass.course.part), handledclass.schedule, handledclass.time))
 
         self.mainlayout = QVBoxLayout()
         self.headerlayout = QHBoxLayout()
@@ -185,7 +172,7 @@ class SelectedClass(QWidget):
         self.inputs["schedule"][1].setReadOnly(True)
         self.inputs["time"][1].setText(handledclass.time)
         self.inputs["time"][1].setReadOnly(True)
-        self.inputs["sessions"][1].setText(str(handledclass.sessions))
+        self.inputs["sessions"][1].setText("{}/{}".format(handledclass.current_session, handledclass.sessions))
         self.inputs["sessions"][1].setReadOnly(True)
         for student in students:
             self.update_student_table(student.student_id)

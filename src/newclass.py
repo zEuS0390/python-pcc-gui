@@ -203,7 +203,7 @@ class NewClass(QWidget):
             self.db,
             course=self.inputs["course"][1].currentText().split("-")[0],
             student_ids=self.student_ids,
-            sessions=self.inputs["sessions"][1].text(),
+            sessions=int(self.inputs["sessions"][1].text()),
             schedule=self.inputs["schedule"][1].text(),
             time=self.inputs["time"][1].text()
         )

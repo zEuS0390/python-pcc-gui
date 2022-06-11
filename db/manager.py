@@ -52,6 +52,10 @@ def add_handled_class(db: Manager, **kwargs):
     handledclass.time = time
     for student_id in student_ids:
         student = db.session.query(Student).filter(Student.student_id==student_id).first()
+        for session_number in range(sessions):
+            classattendance = ClassAttendance(session=session_number+1)
+            student.classattendances.append(classattendance)
+            handledclass.classattendances.append(classattendance)
         handledclass.students.append(student)
     course = db.session.query(Course).filter(Course.name==course_name).first()
     course.handledclasses.append(handledclass)
