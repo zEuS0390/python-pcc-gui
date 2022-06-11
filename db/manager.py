@@ -28,6 +28,9 @@ def get_courses(db: Manager):
 def get_handled_classes(db: Manager):
     return db.session.query(HandledClass).all()
 
+def get_handled_class(db: Manager, handledclass_id: int):
+    return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).first()
+
 def add_new_course(db: Manager, **kwargs):
     name = kwargs["name"]
     part = kwargs["part"]

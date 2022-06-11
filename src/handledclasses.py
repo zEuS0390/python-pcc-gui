@@ -12,6 +12,7 @@ try:
     from db.manager import *
     from db.tables import *
     from src.newclass import NewClass
+    from src.selectedclass import SelectedClass
     import rc.resources
 except:
     import sys, os
@@ -21,7 +22,14 @@ except:
     from db.manager import *
     from db.tables import *
     from newclass import NewClass
+    from src.selectedclass import SelectedClass
     import rc.resources
+
+class IndexClass(QPushButton):
+
+    def __init__(self, handledclass_id: int, *args, parent=None):
+        super(IndexClass, self).__init__(*args, parent)
+        self.handledclass_id = handledclass_id
 
 class HandledClasses(QWidget):
 
@@ -86,8 +94,8 @@ class HandledClasses(QWidget):
         handled_classes = get_handled_classes(self.db)
         self.classestable.setRowCount(len(handled_classes))
         for row, handled_class in enumerate(handled_classes):
-            open_btn = QPushButton("Open")
-            archive_btn = QPushButton("Archive")
+            open_btn = IndexClass(handled_class.handledclass_id, "Open")
+            archive_btn = IndexClass(handled_class.handledclass_id, "Archive")
             course = QTableWidgetItem("{}-{}".format(handled_class.course.name, handled_class.course.part))
             course.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             schedule = QTableWidgetItem(handled_class.schedule)
@@ -105,6 +113,8 @@ class HandledClasses(QWidget):
             self.classestable.setItem(row, 4, days)
             self.classestable.setCellWidget(row, 5, open_btn)
             self.classestable.setCellWidget(row, 6, archive_btn)
+            open_btn.clicked.connect(self.open_selected_handled_class)
+            archive_btn.clicked.connect(self.archive_selected_handled_class)
 
     def setup_table_btns(self):
         self.tablebtnslayout.addStretch()
@@ -124,6 +134,15 @@ class HandledClasses(QWidget):
         self.newclass.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.newclass.update_list.connect(self.update_classes_table)
         self.newclass.show()
+    
+    def open_selected_handled_class(self):
+        handledclass_id = self.sender().handledclass_id
+        self.selectedclass = SelectedClass(handledclass_id, self.db)
+        self.selectedclass.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.selectedclass.show()
+
+    def archive_selected_handled_class(self):
+        print("archive_selected_handled_class: {}".format(self.sender().handledclass_id))
 
 if __name__=="__main__":
     parser = ConfigParser()
