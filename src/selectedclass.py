@@ -17,6 +17,7 @@ try:
     from db.tables import *
     from src.addstudent import AddStudent
     from src.constants import *
+    from src.handledclassattendance import HandledClassAttendance
     import rc.resources
 except ModuleNotFoundError:
     import sys, os
@@ -25,7 +26,8 @@ except ModuleNotFoundError:
     from constants import *
     from db.manager import *
     from db.tables import *
-    from src.addstudent import AddStudent
+    from addstudent import AddStudent
+    from handledclassattendance import HandledClassAttendance
     import rc.resources
 
 class SelectedClass(QWidget):
@@ -91,7 +93,7 @@ class SelectedClass(QWidget):
         self.optionsGroup = QGroupBox("Options")
         self.optionsGroup.setLayout(self.optionslayout)
         self.btns_conf = {
-            "attendance": ("Attendance", lambda: None),
+            "attendance": ("Attendance", self.open_class_attendance),
             "assignments": ("Assignments", lambda: None),
             "activities": ("Activities", lambda: None),
             "quizzes": ("Quizzes", lambda: None)
@@ -159,8 +161,8 @@ class SelectedClass(QWidget):
                 self.studentstable.setItem(row, 0, fname)
                 self.studentstable.setItem(row, 1, mname)
                 self.studentstable.setItem(row, 2, lname)
-                self.studentstable.setItem(row, 3, age)
-                self.studentstable.setItem(row, 4, gender)
+                self.studentstable.setItem(row, 3, gender)
+                self.studentstable.setItem(row, 4, age)
 
     def refresh_students_table(self):
         handledclass = get_handled_class(self.db, self.handledclass_id)
@@ -181,6 +183,11 @@ class SelectedClass(QWidget):
         self.inputs["course"][1].clear()
         courses = ["{}-{}".format(course.name, course.part) for course in get_courses(self.db)]
         self.inputs["course"][1].addItems(courses)
+
+    def open_class_attendance(self):
+        self.classattendance = HandledClassAttendance(self.handledclass_id, self.db)
+        self.classattendance.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.classattendance.show()
 
 if __name__=="__main__":
     parser = ConfigParser()

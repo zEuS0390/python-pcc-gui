@@ -31,6 +31,9 @@ def get_handled_classes(db: Manager):
 def get_handled_class(db: Manager, handledclass_id: int):
     return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).first()
 
+def get_session_attendance_in_class(db: Manager, handledclass_id: int, session: int):
+    return db.session.query(ClassAttendance).filter(ClassAttendance.handledclass_id==handledclass_id, ClassAttendance.session==session).all()
+
 def add_new_course(db: Manager, **kwargs):
     name = kwargs["name"]
     part = kwargs["part"]
@@ -64,4 +67,16 @@ def add_handled_class(db: Manager, **kwargs):
     db.session.commit()
     db.session.close()
 
+def update_handledclass_current_session(db: Manager, handledclass_id: int, current_session: int):
+    handledclass = db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).first()
+    handledclass.current_session = current_session
+    db.session.add(handledclass)
+    db.session.commit()
+    db.session.close()
 
+def update_class_attendance_status(db: Manager, classattendance_id: int, status: str):
+    classattendance = db.session.query(ClassAttendance).filter(ClassAttendance.classattendance_id==classattendance_id).first()
+    classattendance.status = status
+    db.session.add(classattendance)
+    db.session.commit()
+    db.session.close()
