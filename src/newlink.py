@@ -6,27 +6,19 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
+from src.constants import *
+from db.manager import *
 import logging
-
-try:
-    from src.constants import *
-    import rc.resources
-except ModuleNotFoundError:
-    import sys, os
-    sys.path.insert(0, os.path.dirname(sys.path[0]))
-    from configparser import ConfigParser
-    from constants import *
-    import rc.resources
 
 class NewLink(QWidget):
 
     open_link_settings = pyqtSignal()
     update_url_list = pyqtSignal()
 
-    def __init__(self, parser, parent=None):
+    def __init__(self, db: Manager, parent=None):
         super(NewLink, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.parser = parser
+        self.db = db
         self.setup_UI()
         self.destroyed.connect(NewLink._on_destroyed)
 
@@ -97,18 +89,7 @@ class NewLink(QWidget):
     def add(self):
         link_name = self.inputs["link_name"][1].text()
         url_link = self.inputs["url_link"][1].text()
-        if len(link_name) > 0 and len(url_link) > 0:
-            self.parser.set("urls", link_name.replace(" ", "_").lower(), url_link)
-            with open(APP_CONFIG, "w") as cfgfile:
-                self.parser.write(cfgfile)
-            self.update_url_list.emit()
-            self.open_link_settings.emit()
-            self.close()
-
-if __name__=="__main__":
-    parser = ConfigParser()
-    parser.read(APP_CONFIG)
-    app = QApplication(sys.argv)
-    widget = NewLink(parser)
-    widget.show()
-    sys.exit(app.exec())
+        add_new_link(self.db, name=link_name.replace(" ", "_").lower(), group="app_links", url=url_link)
+        self.update_url_list.emit()
+        self.open_link_settings.emit()
+        self.close()

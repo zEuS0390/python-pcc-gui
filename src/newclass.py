@@ -41,6 +41,7 @@ class IndexButton(QPushButton):
 
 class NewClass(QWidget):
 
+    switch_window = pyqtSignal()
     update_list = pyqtSignal()
 
     def __init__(self, db: Manager, parent=None):
@@ -53,6 +54,10 @@ class NewClass(QWidget):
     @staticmethod
     def _on_destroyed():
         print("NewClass instance deleted.")
+
+    def closeEvent(self, event):
+        self.switch_window.emit()
+        return super().closeEvent(event)
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/add_class.png"))

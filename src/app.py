@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
         self.hdr_title.setText(self.parser.get("application", "header_title"))
 
     def open_links(self):
-        self.links = Links(self.parser)
+        self.links = Links(self.db)
         self.links.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.links.show()
 

@@ -3,6 +3,16 @@ from sqlalchemy.orm import declarative_base, relationship
 
 base = declarative_base()
 
+class Link(base):
+
+    __tablename__="link"
+    link_id = Column(Integer, primary_key=True)
+    name = Column(VARCHAR(200))
+    group = Column(VARCHAR(200))
+    url = Column(VARCHAR(8000))
+    def __repr__(self):
+        return f"Link(link_id={self.link_id}, group='{self.group}', url='{self.url}')"
+
 class Student(base):
 
     __tablename__ = "student"

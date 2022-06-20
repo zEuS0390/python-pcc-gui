@@ -107,7 +107,7 @@ class Students(QWidget):
     def setup_table_btns(self):
         self.btnslayout.addStretch()
         self.btns_conf = {
-            "new_student": ("New Student:", self.open_new_student),
+            "new_student": ("New Student", self.open_new_student),
         }
         self.btns = {}
         for name, val in self.btns_conf.items():

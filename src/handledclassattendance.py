@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem
 )
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 try:
     from db.manager import *
@@ -30,12 +30,18 @@ class IndexAttendance(QPushButton):
 
 class HandledClassAttendance(QWidget):
 
+    switch_window = pyqtSignal()
+
     def __init__(self, handledclass_id: int, db: Manager, parent=None):
         super(HandledClassAttendance, self).__init__(parent)
         self.handledclass_id = handledclass_id
         self.db = db
         self.session_no = 0
         self.setup_UI()
+
+    def closeEvent(self, event):
+        self.switch_window.emit()
+        return super().closeEvent(event)
 
     def setup_UI(self):
         self.setWindowIcon(QIcon(":/"))

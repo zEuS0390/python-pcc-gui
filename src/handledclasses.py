@@ -132,14 +132,18 @@ class HandledClasses(QWidget):
     def open_new_class(self):
         self.newclass = NewClass(self.db)
         self.newclass.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.newclass.switch_window.connect(self.show)
         self.newclass.update_list.connect(self.update_classes_table)
         self.newclass.show()
+        self.hide()
     
     def open_selected_handled_class(self):
         handledclass_id = self.sender().handledclass_id
         self.selectedclass = SelectedClass(handledclass_id, self.db)
+        self.selectedclass.switch_window.connect(self.show)
         self.selectedclass.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.selectedclass.show()
+        self.hide()
 
     def archive_selected_handled_class(self):
         print("archive_selected_handled_class: {}".format(self.sender().handledclass_id))

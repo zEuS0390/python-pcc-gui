@@ -32,6 +32,8 @@ except ModuleNotFoundError:
 
 class SelectedClass(QWidget):
 
+    switch_window = pyqtSignal()
+
     def __init__(self, handledclass_id: int, db: Manager, parent=None):
         super(SelectedClass, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
@@ -43,6 +45,10 @@ class SelectedClass(QWidget):
     @staticmethod
     def _on_destroyed():
         print("SelectedClass instance deleted.")
+
+    def closeEvent(self, event):
+        self.switch_window.emit()
+        return super().closeEvent(event)
 
     def setup_UI(self):
         handledclass = get_handled_class(self.db, self.handledclass_id)
@@ -186,8 +192,14 @@ class SelectedClass(QWidget):
 
     def open_class_attendance(self):
         self.classattendance = HandledClassAttendance(self.handledclass_id, self.db)
+        self.classattendance.switch_window.connect(self.reopen_window)
         self.classattendance.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.classattendance.show()
+        self.hide()
+
+    def reopen_window(self):
+        self.refresh_students_table()
+        self.show()
 
 if __name__=="__main__":
     parser = ConfigParser()

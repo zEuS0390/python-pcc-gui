@@ -6,27 +6,18 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-
-try:
-    from src.constants import *
-    from src.newlink import NewLink
-    import rc.resources
-except:
-    import sys, os
-    sys.path.insert(0, os.path.dirname(sys.path[0]))
-    from configparser import ConfigParser
-    from constants import *
-    from newlink import NewLink
-    import rc.resources
+from src.constants import *
+from src.newlink import NewLink
+from db.manager import *
 
 class LinksSettings(QWidget):
 
     close_links = pyqtSignal()
 
-    def __init__(self, parser, parent=None):
+    def __init__(self, db: Manager, parent=None):
         super(LinksSettings, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.parser = parser
+        self.db = db
         self.setup_UI()
         self.destroyed.connect(LinksSettings._on_destroyed)
 
@@ -51,7 +42,8 @@ class LinksSettings(QWidget):
         self.urllist = QListWidget()
         self.urllist.itemClicked.connect(
             lambda: self.urllink.setText(
-                self.parser.get("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
+                get_app_link(self.db, name=self.urllist.currentItem().text().replace(" ", "_").lower()).url
+                # self.parser.get("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
             )
         )
         self.urllink = QLineEdit()
@@ -84,38 +76,25 @@ class LinksSettings(QWidget):
 
     def update(self):
         if self.urllist.currentItem() is not None:
-            self.parser.set("urls", self.urllist.currentItem().text().replace(" ", "_").lower(), self.urllink.text())
-            with open(APP_CONFIG, "w") as cfgfile:
-                self.parser.write(cfgfile)
+            update_app_link(self.db, self.urllist.currentItem().text().replace(" ", "_").lower(), self.urllink.text())
             self.close_links.emit()
             self.close()
 
     def delete_url_link(self):
         if self.urllist.currentItem() is not None:
             self.urllink.clear()
-            self.parser.remove_option("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
-            self.urllist.takeItem(self.urllist.currentRow())
-            with open(APP_CONFIG, "w") as cfgfile:
-                self.parser.write(cfgfile)
+            delete_app_link(self.db, self.urllist.currentItem().text().replace(" ", "_").lower())
             self.update_url_list()
 
     def update_url_list(self):
         self.urllist.clear()
-        for link_name, url_link in self.parser.items("urls"):
-            self.urllist.addItem(QListWidgetItem(link_name.replace("_", " ").upper()))
+        for link in get_app_links(self.db):
+            self.urllist.addItem(QListWidgetItem(link.name.replace("_", " ").upper()))
 
     def open_add_new_link(self):
-        self.newlink = NewLink(self.parser)
+        self.newlink = NewLink(self.db)
         self.newlink.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.newlink.open_link_settings.connect(self.show)
         self.newlink.update_url_list.connect(self.update_url_list)
         self.newlink.show()
         self.hide()
-
-if __name__=="__main__":
-    parser = ConfigParser()
-    parser.read(APP_CONFIG)
-    app = QApplication(sys.argv)
-    widget = LinksSettings(parser)
-    widget.show()
-    sys.exit(app.exec())

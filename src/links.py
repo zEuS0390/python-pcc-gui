@@ -4,17 +4,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
+from src.constants import *
+from src.linkssettings import LinksSettings
+from db.manager import *
 import webbrowser
-
-try:
-    from src.constants import *
-    from src.linkssettings import LinksSettings
-except:
-    import sys, os
-    sys.path.insert(0, os.path.dirname(sys.path[0]))
-    from constants import *
-    from linkssettings import LinksSettings
-    import rc.resources
 
 class LinkButton(QPushButton):
 
@@ -24,10 +17,10 @@ class LinkButton(QPushButton):
 
 class Links(QWidget):
 
-    def __init__(self, parser, parent=None):
+    def __init__(self, db: Manager, parent=None):
         super(Links, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.parser = parser
+        self.db = db
         self.setup_UI()
         self.destroyed.connect(Links._on_destroyed)
 
@@ -48,8 +41,8 @@ class Links(QWidget):
     def setup_btns(self):
         self.urllinks_btn = QPushButton("URL LINKS SETTINGS")
         self.urllinks_btn.clicked.connect(self.open_links_settings)
-        for link_name, url_link in self.parser.items("urls"):
-            btn = LinkButton(url_link, link_name.replace("_", " ").upper())
+        for link in get_app_links(self.db):
+            btn = LinkButton(link.url, link.name.replace("_", " ").upper())
             btn.clicked.connect(self.open_link)
             self.btnslayout.addWidget(btn)
         self.btnslayout.addWidget(self.urllinks_btn)
@@ -61,19 +54,8 @@ class Links(QWidget):
         self.close()
 
     def open_links_settings(self):
-        self.linkssettings = LinksSettings(self.parser)
+        self.linkssettings = LinksSettings(self.db)
         self.linkssettings.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.linkssettings.close_links.connect(self.close)
         self.linkssettings.show()
         self.hide()
-
-if __name__=="__main__":
-    import sys, os
-    from configparser import ConfigParser
-    sys.path.insert(0, os.path.dirname(sys.path[0]))
-    parser = ConfigParser()
-    parser.read(APP_CONFIG)
-    app = QApplication(sys.argv)
-    widget = Links(parser)
-    widget.show()
-    sys.exit(app.exec())
