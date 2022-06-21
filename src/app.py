@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QPushButton,
     QVBoxLayout, QWidget,
-    QLabel, QHBoxLayout
+    QLabel, QHBoxLayout, 
+    QSizePolicy
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 from .handledclasses import HandledClasses
 from .preferences import Preferences
@@ -43,19 +44,13 @@ class MainWindow(QMainWindow):
         self.contentlayout = QHBoxLayout()
         self.sidebarlayout = QVBoxLayout()
         self.btnslayout = QVBoxLayout()
-        self.hdrlayout = QVBoxLayout()
 
-        self.setup_hdr()
         self.setup_btns()
+
+        self.btnslayout.setContentsMargins(50, 50, 50, 50)
 
         self.mainlayout.addLayout(self.contentlayout)
         self.mainlayout.addLayout(self.sidebarlayout)
-
-    def setup_hdr(self):
-        self.hdr_title = QLabel(self.parser.get("application", "header_title"))
-        self.hdrlayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.hdrlayout.addWidget(self.hdr_title)
-        self.mainlayout.addLayout(self.hdrlayout)
 
     def setup_btns(self):
         self.btns_conf = {
@@ -66,19 +61,22 @@ class MainWindow(QMainWindow):
             "Preferences": self.open_settings
         }
         self.btns = []
+        font = QFont()
+        font.setPointSize(18)
+        font.setFamily("Roboto Mono")
         for name, func in self.btns_conf.items():
             btn = QPushButton(name)
             btn.clicked.connect(func)
+            btn.setFont(font)
+            btn.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
             self.btnslayout.addWidget(btn)
             self.btns.append(btn)
-        self.sidebarlayout.addStretch()
         self.sidebarlayout.addLayout(self.btnslayout)
-        self.sidebarlayout.addStretch()
 
     def open_classes(self):
         self.classes = HandledClasses(self.db)
         self.classes.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.classes.show()
+        self.classes.showMaximized()
 
     def open_settings(self):
         self.preferences = Preferences(self.parser)
@@ -89,19 +87,18 @@ class MainWindow(QMainWindow):
     def apply_preferences(self):
         self.parser.read(APP_CONFIG)
         self.setWindowTitle(self.parser.get("application", "title"))
-        self.hdr_title.setText(self.parser.get("application", "header_title"))
 
     def open_links(self):
         self.links = Links(self.db)
         self.links.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.links.show()
+        self.links.showMaximized()
 
     def open_students(self):
         self.students = Students(self.db)
         self.students.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.students.show()
+        self.students.showMaximized()
     
     def open_courses(self):
         self.courses = Courses(self.db)
         self.courses.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.courses.show()
+        self.courses.showMaximized()

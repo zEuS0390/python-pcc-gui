@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import (
     QApplication, QWidget,
-    QVBoxLayout, QPushButton
+    QVBoxLayout, QPushButton,
+    QSizePolicy
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 from src.constants import *
 from src.linkssettings import LinksSettings
@@ -35,15 +36,22 @@ class Links(QWidget):
         self.btnslayout = QVBoxLayout()
         self.setup_btns()
         self.setLayout(self.mainlayout)
-        self.resize(self.mainlayout.sizeHint())
+        self.btnslayout.setContentsMargins(50, 50, 50, 50)
         self.setMinimumWidth(320)
 
     def setup_btns(self):
+        font = QFont()
+        font.setPointSize(18)
+        font.setFamily("Roboto Mono")
         self.urllinks_btn = QPushButton("URL LINKS SETTINGS")
+        self.urllinks_btn.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         self.urllinks_btn.clicked.connect(self.open_links_settings)
+        self.urllinks_btn.setFont(font)
         for link in get_app_links(self.db):
             btn = LinkButton(link.url, link.name.replace("_", " ").upper())
             btn.clicked.connect(self.open_link)
+            btn.setFont(font)
+            btn.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
             self.btnslayout.addWidget(btn)
         self.btnslayout.addWidget(self.urllinks_btn)
         self.mainlayout.addLayout(self.btnslayout)
@@ -57,5 +65,5 @@ class Links(QWidget):
         self.linkssettings = LinksSettings(self.db)
         self.linkssettings.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.linkssettings.close_links.connect(self.close)
-        self.linkssettings.show()
+        self.linkssettings.showMaximized()
         self.hide()

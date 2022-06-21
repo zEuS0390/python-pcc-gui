@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QHeaderView, QPushButton,
     QTableWidgetItem
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 import logging
 
@@ -86,13 +86,19 @@ class NewClass(QWidget):
             "sessions": ("Sessions:", QLineEdit),
         }
         self.inputs = {}
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.inputs_conf.items():
             obj = None
             label = QLabel(val[0])
+            label.setFont(font)
             if val[1] == QLineEdit:
                 obj = val[1]()
+                obj.setFont(font)
             elif val[1] == QComboBox:
                 obj = val[1]()
+                obj.setFont(font)
             self.inputslayout.addWidget(label)
             self.inputslayout.addWidget(obj)
             self.inputs[name] = (label, obj)
@@ -100,9 +106,15 @@ class NewClass(QWidget):
         self.update_combobox()
 
     def setup_table_ctrl(self):
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         table_title = QLabel("List of Students")
+        table_title.setFont(font)
         self.import_students_btn = QPushButton("Import Students")
+        self.import_students_btn.setFont(font)
         self.add_student_btn = QPushButton("Add Student")
+        self.add_student_btn.setFont(font)
         self.add_student_btn.clicked.connect(self.add_student)
         self.tablectrllayout.addWidget(table_title)
         self.tablectrllayout.addStretch()
@@ -121,7 +133,11 @@ class NewClass(QWidget):
             "age": "Age",
             "actions": "Actions"
         }
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.studentstable = QTableWidget()
+        self.studentstable.setFont(font)
         self.studentstable.setColumnCount(len(table_headers))
         self.studentstable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.studentstable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -148,8 +164,12 @@ class NewClass(QWidget):
         }
         self.btns = {}
         self.btnslayout.addStretch()
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn

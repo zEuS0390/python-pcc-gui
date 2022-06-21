@@ -3,9 +3,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QHBoxLayout,
     QTableWidget, QAbstractScrollArea,
     QAbstractItemView, QHeaderView,
-    QPushButton, QTableWidgetItem
+    QPushButton, QTableWidgetItem,
+    QSizePolicy
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 
 try:
@@ -46,8 +47,7 @@ class Students(QWidget):
         self.setup_table_btns()
         self.setup_students_table()
         self.setLayout(self.mainlayout)
-        self.resize(self.mainlayout.sizeHint())
-        self.setMinimumSize(640, 480)
+        self.setMinimumSize(800, 480)
 
     def setup_students_table(self):
         studentstable_headers = {
@@ -59,7 +59,11 @@ class Students(QWidget):
             "open": " ",
             "archive": " "
         }
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.studentstable = QTableWidget()
+        self.studentstable.setFont(font)
         self.studentstable.setColumnCount(len(studentstable_headers))
         self.studentstable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.studentstable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -110,9 +114,13 @@ class Students(QWidget):
             "new_student": ("New Student", self.open_new_student),
         }
         self.btns = {}
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
+            btn.setFont(font)
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)

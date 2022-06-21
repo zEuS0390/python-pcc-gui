@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QVBoxLayout,
     QHBoxLayout, QPushButton
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
 try:
@@ -46,19 +46,23 @@ class Preferences(QWidget):
     def setup_inputs(self):
         self.inputs_conf = {
             "app_title": ("App Title:", QLineEdit),
-            "header_title": ("Header Title:", QLineEdit),
-            "email": ("Email:", QLineEdit),
+            "email": ("Email Address:", QLineEdit),
         }
         self.inputs = {}
         row = 0
         col = 0
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.inputs_conf.items():
             obj = None
             col = 0
             label = QLabel(val[0])
+            label.setFont(font)
             col += 1
             if val[1] == QLineEdit:
                 obj = val[1]()
+                obj.setFont(font)
             self.inputslayout.addWidget(label, row, col)
             col += 1
             self.inputslayout.addWidget(obj, row, col)
@@ -67,7 +71,6 @@ class Preferences(QWidget):
         self.mainlayout.addLayout(self.inputslayout)
 
         self.inputs["app_title"][1].setText(self.parser.get("application", "title"))
-        self.inputs["header_title"][1].setText(self.parser.get("application", "header_title"))
         self.inputs["email"][1].setText(self.parser.get("mail", "email"))
 
     def setup_btns(self):
@@ -77,9 +80,13 @@ class Preferences(QWidget):
         }
         self.btns = {}
         self.btnslayout.addStretch()
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
+            btn.setFont(font)
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
 
@@ -87,7 +94,6 @@ class Preferences(QWidget):
 
     def apply(self):
         self.parser.set("application", "title", self.inputs["app_title"][1].text())
-        self.parser.set("application", "header_title", self.inputs["header_title"][1].text())
         self.parser.set("mail", "email", self.inputs["email"][1].text())
         with open(APP_CONFIG, "w") as cfgfile:
             self.parser.write(cfgfile)

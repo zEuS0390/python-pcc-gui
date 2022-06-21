@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QLabel,
     QHBoxLayout, QPushButton
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.constants import *
 from db.manager import *
@@ -75,9 +75,13 @@ class NewLink(QWidget):
             "submit": ("Add", self.add)
         }
         self.btns = {}
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
+            btn.setFont(font)
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)

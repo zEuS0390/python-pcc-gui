@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QPushButton,
     QHBoxLayout, QListWidgetItem
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.constants import *
 from src.newlink import NewLink
@@ -35,37 +35,47 @@ class LinksSettings(QWidget):
         self.setup_btns()
         self.update_url_list()
         self.setLayout(self.mainlayout)
-        self.resize(self.mainlayout.sizeHint())
+        # self.resize(self.mainlayout.sizeHint())
         self.setMinimumWidth(640)
 
     def setup_url_list(self):
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.urllist = QListWidget()
         self.urllist.itemClicked.connect(
             lambda: self.urllink.setText(
                 get_app_link(self.db, name=self.urllist.currentItem().text().replace(" ", "_").lower()).url
-                # self.parser.get("urls", self.urllist.currentItem().text().replace(" ", "_").lower())
             )
         )
+        self.urllist.setFont(font)
         self.urllink = QLineEdit()
+        self.urllink.setFont(font)
         self.mainlayout.addWidget(self.urllist)
         self.mainlayout.addWidget(self.urllink)
         self.mainlayout.addLayout(self.listlayout)
 
     def setup_btns(self):
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.btns_conf = {
             "submit": ("Update", self.update)
         }
         self.btns = {}
         self.btns["new"] = QPushButton("New")
         self.btns["new"].clicked.connect(self.open_add_new_link)
+        self.btns["new"].setFont(font)
         self.btnslayout.addWidget(self.btns["new"])
         self.btns["delete"] = QPushButton("Delete")
         self.btns["delete"].clicked.connect(self.delete_url_link)
+        self.btns["delete"].setFont(font)
         self.btnslayout.addWidget(self.btns["delete"])
         self.btnslayout.addStretch()
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
+            btn.setFont(font)
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)

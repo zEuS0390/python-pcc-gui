@@ -1,4 +1,12 @@
-__pycache__/
-*.png
-*.db
-*.bat
+*
+!.gitignore
+!cfg/
+!db/
+!img/
+!logs/
+!rc/
+!src/
+!tools/
+!main.py
+!Pipfile
+!Pipfile.lock

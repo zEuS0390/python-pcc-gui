@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QHeaderView, QTableWidgetItem,
     QPushButton, QHBoxLayout
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 
 try:
@@ -69,7 +69,11 @@ class HandledClasses(QWidget):
             "open": " ",
             "archive": " "
         }
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.classestable = QTableWidget()
+        self.classestable.setFont(font)
         self.classestable.setColumnCount(len(classestable_headers))
         self.classestable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.classestable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -122,8 +126,12 @@ class HandledClasses(QWidget):
             "new_class": ("New Class", self.open_new_class),
         }
         self.btns = {}
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.tablebtnslayout.addWidget(btn)
             self.btns[name] = btn
@@ -134,7 +142,7 @@ class HandledClasses(QWidget):
         self.newclass.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.newclass.switch_window.connect(self.show)
         self.newclass.update_list.connect(self.update_classes_table)
-        self.newclass.show()
+        self.newclass.showMaximized()
         self.hide()
     
     def open_selected_handled_class(self):
@@ -142,7 +150,7 @@ class HandledClasses(QWidget):
         self.selectedclass = SelectedClass(handledclass_id, self.db)
         self.selectedclass.switch_window.connect(self.show)
         self.selectedclass.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.selectedclass.show()
+        self.selectedclass.showMaximized()
         self.hide()
 
     def archive_selected_handled_class(self):

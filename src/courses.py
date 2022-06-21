@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QHeaderView, QHBoxLayout,
     QPushButton, QTableWidgetItem
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 
 try:
@@ -63,7 +63,11 @@ class Courses(QWidget):
             "open": "",
             "archive": ""
         }
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         self.coursestable = QTableWidget()
+        self.coursestable.setFont(font)
         self.coursestable.setColumnCount(len(coursestable_headers))
         self.coursestable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.coursestable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -89,8 +93,12 @@ class Courses(QWidget):
             "new_course": ("New Course", self.open_new_course),
         }
         self.btns = {}
+        font = QFont()
+        font.setPointSize(12)
+        font.setFamily("Roboto Mono")
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.tablebtnslayout.addWidget(btn)
             self.btns[name] = btn
@@ -107,7 +115,7 @@ class Courses(QWidget):
         courses = get_courses(self.db)
         self.coursestable.setRowCount(len(courses))
         for row, course in enumerate(courses):
-            open_btn = IndexCourse(course.course_id, "Edit")
+            open_btn = IndexCourse(course.course_id, "Open")
             archive_btn = IndexCourse(course.course_id, "Archive")
             name = QTableWidgetItem(course.name)
             name.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
