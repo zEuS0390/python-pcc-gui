@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QPushButton,
     QHBoxLayout, QListWidgetItem
 )
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QGuiApplication
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.constants import *
 from src.newlink import NewLink
@@ -60,7 +60,8 @@ class LinksSettings(QWidget):
         font.setPointSize(12)
         font.setFamily("Roboto Mono")
         self.btns_conf = {
-            "submit": ("Update", self.update)
+            "copy": ("Copy", self.copy),
+            "update": ("Update", self.update)
         }
         self.btns = {}
         self.btns["new"] = QPushButton("New")
@@ -83,6 +84,10 @@ class LinksSettings(QWidget):
     def closeEvent(self, event):
         self.close_links.emit()
         return super().closeEvent(event)
+
+    def copy(self):
+        clipboard = QGuiApplication.clipboard()
+        clipboard.setText(self.urllink.text())
 
     def update(self):
         if self.urllist.currentItem() is not None:
