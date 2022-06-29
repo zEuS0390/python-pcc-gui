@@ -60,7 +60,10 @@ class NewCourse(QWidget):
         self.inputs_conf = {
             "course_title": ("Course Title:", QLineEdit),
             "course_part": ("Course Part:", QComboBox),
-            "course_desc": ("Course Description", QLineEdit)
+            "course_desc": ("Course Description:", QLineEdit),
+            "assignments": ("Assignments URL Link:", QLineEdit),
+            "activities": ("Activities URL Link:", QLineEdit),
+            "quizzes": ("Quizzes URL Link:", QLineEdit)
         }
         self.inputs = {}
         row = 0
@@ -101,7 +104,10 @@ class NewCourse(QWidget):
             self.db,
             name=self.inputs["course_title"][1].text(),
             part=self.inputs["course_part"][1].currentText(),
-            desc=self.inputs["course_desc"][1].text()
+            desc=self.inputs["course_desc"][1].text(),
+            assignments=self.inputs["assignments"][1].text(),
+            activities=self.inputs["activities"][1].text(),
+            quizzes=self.inputs["quizzes"][1].text()
         )
         self.update_list.emit()
         self.close()

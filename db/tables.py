@@ -36,6 +36,9 @@ class Course(base):
     name = Column(VARCHAR(200))
     part = Column(VARCHAR(200))
     desc = Column(VARCHAR(200))
+    assignments = Column(VARCHAR(200))
+    activities = Column(VARCHAR(200))
+    quizzes = Column(VARCHAR(200))
     handledclasses = relationship("HandledClass", backref="course", cascade="all, delete-orphan")
 
     def __repr__(self):

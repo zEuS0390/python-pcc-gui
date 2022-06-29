@@ -40,6 +40,9 @@ def get_handled_class(db: Manager, handledclass_id: int):
 def get_session_attendance_in_class(db: Manager, handledclass_id: int, session: int):
     return db.session.query(ClassAttendance).filter(ClassAttendance.handledclass_id==handledclass_id, ClassAttendance.session==session).all()
 
+def get_course_in_handledclass(db: Manager, handledclass_id: int):
+    return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).first().course
+
 def add_new_link(db: Manager, name, group, url):
     link = Link(name=name, group=group, url=url)
     db.session.add(link)
@@ -50,7 +53,17 @@ def add_new_course(db: Manager, **kwargs):
     name = kwargs["name"]
     part = kwargs["part"]
     desc= kwargs["desc"]
-    course = Course(name=name, part=part, desc=desc)
+    assignments = kwargs["assignments"]
+    activities = kwargs["activities"]
+    quizzes = kwargs["quizzes"]
+    course = Course(
+        name=name, 
+        part=part, 
+        desc=desc, 
+        assignments=assignments, 
+        activities=activities, 
+        quizzes=quizzes
+    )
     db.session.add(course)
     db.session.commit()
     db.session.close()
@@ -105,3 +118,6 @@ def delete_app_link(db: Manager, name):
     db.session.delete(link)
     db.session.commit()
     db.session.close()
+
+def delete_handledclass(db: Manager, handledclass_id: int):
+    return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).delete()

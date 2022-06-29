@@ -154,7 +154,9 @@ class HandledClasses(QWidget):
         self.hide()
 
     def archive_selected_handled_class(self):
-        print("archive_selected_handled_class: {}".format(self.sender().handledclass_id))
+        handledclass_id = self.sender().handledclass_id
+        delete_handledclass(self.db, handledclass_id)
+        self.update_classes_table()
 
 if __name__=="__main__":
     parser = ConfigParser()

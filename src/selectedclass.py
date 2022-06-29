@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-import logging
+import logging, webbrowser
 
 try:
     from db.manager import *
@@ -98,11 +98,13 @@ class SelectedClass(QWidget):
     def setup_options(self):
         self.optionsGroup = QGroupBox("Options")
         self.optionsGroup.setLayout(self.optionslayout)
+        course = get_course_in_handledclass(self.db, self.handledclass_id)
         self.btns_conf = {
             "attendance": ("Attendance", self.open_class_attendance),
-            "assignments": ("Assignments", lambda: None),
-            "activities": ("Activities", lambda: None),
-            "quizzes": ("Quizzes", lambda: None)
+            "assignments": ("Assignments", lambda: self.open_link(course.assignments)),
+            "activities": ("Activities", lambda: self.open_link(course.activities)),
+            "quizzes": ("Quizzes", lambda: self.open_link(course.quizzes)),
+            "grades": ("Grades", lambda: None)
         }
         self.btns = {}
         for name, val in self.btns_conf.items():
@@ -200,6 +202,9 @@ class SelectedClass(QWidget):
     def reopen_window(self):
         self.refresh_students_table()
         self.show()
+
+    def open_link(self, url):
+        webbrowser.open(url)
 
 if __name__=="__main__":
     parser = ConfigParser()
