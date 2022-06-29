@@ -25,6 +25,12 @@ except ModuleNotFoundError:
     from db.tables import *
     import rc.resources
 
+class IndexClass(QPushButton):
+
+    def __init__(self, student_id: int, *args, parent=None):
+        super(IndexClass, self).__init__(*args, parent)
+        self.student_id = student_id
+
 class Students(QWidget):
 
     def __init__(self, db, parent=None):
@@ -88,8 +94,8 @@ class Students(QWidget):
         students = get_students(self.db)
         self.studentstable.setRowCount(len(students))
         for row, student in enumerate(students):
-            open_btn = QPushButton("Open")
-            archive_btn = QPushButton("Archive")
+            open_btn = IndexClass(student.student_id, "Open")
+            archive_btn = IndexClass(student.student_id, "Archive")
             fname = QTableWidgetItem(student.fname)
             fname.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             mname = QTableWidgetItem(student.mname)
@@ -107,6 +113,8 @@ class Students(QWidget):
             self.studentstable.setItem(row, 4, age)
             self.studentstable.setCellWidget(row, 5, open_btn)
             self.studentstable.setCellWidget(row, 6, archive_btn)
+            open_btn.clicked.connect(self.open_selected_student)
+            archive_btn.clicked.connect(self.archive_selected_student)
     
     def setup_table_btns(self):
         self.btnslayout.addStretch()
@@ -130,6 +138,15 @@ class Students(QWidget):
         self.newstudent.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.newstudent.update_list.connect(self.update_students_table)
         self.newstudent.show()
+
+    def open_selected_student(self):
+        pass
+
+    def archive_selected_student(self):
+        student_id = self.sender().student_id
+        print(student_id)
+        delete_student(self.db, student_id)
+        self.update_students_table()
 
 
 if __name__=="__main__":

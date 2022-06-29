@@ -121,3 +121,6 @@ def delete_app_link(db: Manager, name):
 
 def delete_handledclass(db: Manager, handledclass_id: int):
     return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).delete()
+
+def delete_student(db: Manager, student_id: int):
+    return db.session.query(Student).filter(Student.student_id==student_id).delete()
