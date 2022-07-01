@@ -2,13 +2,16 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QVBoxLayout, QListWidget,
     QLineEdit, QPushButton,
-    QHBoxLayout, QListWidgetItem
+    QHBoxLayout, QListWidgetItem,
+    QFileDialog
 )
 from PyQt5.QtGui import QIcon, QFont, QGuiApplication
 from PyQt5.QtCore import Qt, pyqtSignal
 from src.constants import *
 from src.newlink import NewLink
 from db.manager import *
+from openpyxl import Workbook, load_workbook
+from openpyxl.utils import get_column_letter
 
 class LinksSettings(QWidget):
 
@@ -29,13 +32,12 @@ class LinksSettings(QWidget):
         self.setWindowIcon(QIcon(":/hyperlink.png"))
         self.setWindowTitle("URL Links")
         self.mainlayout = QVBoxLayout()
-        self.listlayout = QVBoxLayout()
+        self.selectedlinklayout = QHBoxLayout()
         self.btnslayout = QHBoxLayout()
         self.setup_url_list()
         self.setup_btns()
         self.update_url_list()
         self.setLayout(self.mainlayout)
-        # self.resize(self.mainlayout.sizeHint())
         self.setMinimumWidth(640)
 
     def setup_url_list(self):
@@ -51,9 +53,9 @@ class LinksSettings(QWidget):
         self.urllist.setFont(font)
         self.urllink = QLineEdit()
         self.urllink.setFont(font)
+        self.selectedlinklayout.addWidget(self.urllink, 60)
         self.mainlayout.addWidget(self.urllist)
-        self.mainlayout.addWidget(self.urllink)
-        self.mainlayout.addLayout(self.listlayout)
+        self.mainlayout.addLayout(self.selectedlinklayout)
 
     def setup_btns(self):
         font = QFont()
@@ -68,8 +70,12 @@ class LinksSettings(QWidget):
         self.btns["new"].clicked.connect(self.open_add_new_link)
         self.btns["new"].setFont(font)
         self.btnslayout.addWidget(self.btns["new"])
+        self.btns["export"] = QPushButton("Export")
+        self.btns["export"].clicked.connect(self.export_links)
+        self.btns["export"].setFont(font)
+        self.btnslayout.addWidget(self.btns["export"])
         self.btns["delete"] = QPushButton("Delete")
-        self.btns["delete"].clicked.connect(self.delete_url_link)
+        self.btns["delete"].clicked.connect(self.delete_link)
         self.btns["delete"].setFont(font)
         self.btnslayout.addWidget(self.btns["delete"])
         self.btnslayout.addStretch()
@@ -77,7 +83,7 @@ class LinksSettings(QWidget):
             btn = QPushButton(val[0])
             btn.clicked.connect(val[1])
             btn.setFont(font)
-            self.btnslayout.addWidget(btn)
+            self.selectedlinklayout.addWidget(btn)
             self.btns[name] = btn
         self.mainlayout.addLayout(self.btnslayout)
 
@@ -95,7 +101,7 @@ class LinksSettings(QWidget):
             self.close_links.emit()
             self.close()
 
-    def delete_url_link(self):
+    def delete_link(self):
         if self.urllist.currentItem() is not None:
             self.urllink.clear()
             delete_app_link(self.db, self.urllist.currentItem().text().replace(" ", "_").lower())
@@ -113,3 +119,17 @@ class LinksSettings(QWidget):
         self.newlink.update_url_list.connect(self.update_url_list)
         self.newlink.show()
         self.hide()
+
+    def export_links(self):
+        filepath, _ = QFileDialog.getSaveFileName(self, "Export links", filter="XLSX File (*.xlsx)")
+        if len(filepath) > 0:
+            links = get_all_links(self.db)
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "PCC URL LINKS"
+            for link in links:
+                ws.append([link.name, link.group, link.url])
+            ws.column_dimensions[get_column_letter(1)].width = 40
+            ws.column_dimensions[get_column_letter(2)].width = 40
+            ws.column_dimensions[get_column_letter(3)].width = 200
+            wb.save(filepath)
