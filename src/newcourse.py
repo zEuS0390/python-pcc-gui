@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QPushButton,
     QComboBox
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 import logging
 
@@ -57,6 +57,8 @@ class NewCourse(QWidget):
         self.resize(self.mainlayout.sizeHint())
 
     def setup_inputs(self):
+        font = QFont()
+        font.setPointSize(12)
         self.inputs_conf = {
             "course_title": ("Course Title:", QLineEdit),
             "course_part": ("Course Part:", QComboBox),
@@ -72,11 +74,14 @@ class NewCourse(QWidget):
             obj = None
             col = 0
             label = QLabel(val[0])
+            label.setFont(font)
             col += 1
             if val[1] == QLineEdit:
                 obj = val[1]()
+                obj.setFont(font)
             elif val[1] == QComboBox:
                 obj = val[1]()
+                obj.setFont(font)
             self.inputslayout.addWidget(label, row, col)
             col += 1
             self.inputslayout.addWidget(obj, row, col)
@@ -84,9 +89,14 @@ class NewCourse(QWidget):
             row += 1
         self.mainlayout.addLayout(self.inputslayout)
 
+        self.inputs["course_title"][1].setPlaceholderText("GD")
+        self.inputs["course_desc"][1].setPlaceholderText("Game Development 1")
+
         self.update_combobox()
 
     def setup_btns(self):
+        font = QFont()
+        font.setPointSize(12)
         self.btns_conf = {
             "cancel": ("Cancel", self.close),
             "submit": ("Add", self.add)
@@ -94,6 +104,7 @@ class NewCourse(QWidget):
         self.btns = {}
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
