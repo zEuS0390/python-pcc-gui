@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 )
 import logging
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 try:
     from db.manager import Manager
     from db.tables import *
@@ -57,6 +57,8 @@ class NewStudent(QWidget):
         self.setMinimumWidth(320)
 
     def setup_inputs(self):
+        font = QFont()
+        font.setPointSize(12)
         self.inputs_conf = {
             "fname": ("First Name:", QLineEdit),
             "mname": ("Middle Name:", QLineEdit),
@@ -72,11 +74,14 @@ class NewStudent(QWidget):
             obj = None
             col = 0
             label = QLabel(val[0])
+            label.setFont(font)
             col += 1
             if val[1] == QLineEdit:
                 obj = val[1]()
+                obj.setFont(font)
             elif val[1] == QComboBox:
                 obj = val[1]()
+                obj.setFont(font)
             self.inputslayout.addWidget(label, row, col)
             col += 1
             self.inputslayout.addWidget(obj, row, col)
@@ -88,6 +93,8 @@ class NewStudent(QWidget):
         self.inputs["gender"][1].addItem("Female")
 
     def setup_btns(self):
+        font = QFont()
+        font.setPointSize(12)
         self.btns_conf = {
             "cancel": ("Cancel", self.close),
             "submit": ("Add", self.add)
@@ -95,6 +102,7 @@ class NewStudent(QWidget):
         self.btns = {}
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn
