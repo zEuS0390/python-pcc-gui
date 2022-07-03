@@ -120,7 +120,7 @@ def delete_app_link(db: Manager, name):
     db.session.close()
 
 def delete_handledclass(db: Manager, handledclass_id: int):
-    handledclass = db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id)
+    handledclass = db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).first()
     db.session.delete(handledclass)
     db.session.commit()
     db.session.close()
