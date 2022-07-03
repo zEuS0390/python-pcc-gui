@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem, QHBoxLayout,
     QPushButton
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
 try:
@@ -41,11 +41,13 @@ class AddStudent(QWidget):
         self.setup_students_list()
         self.setup_btns()
         self.setLayout(self.mainlayout)
-        self.resize(self.mainlayout.sizeHint())
 
     def setup_students_list(self):
+        font = QFont()
+        font.setPointSize(12)
         self.student_ids = []
         self.studentslist = QListWidget()
+        self.studentslist.setFont(font)
         students = get_students(self.db)
         for student in students:
             item = QListWidgetItem(QIcon(":/new_student.png"),
@@ -62,7 +64,10 @@ class AddStudent(QWidget):
         self.mainlayout.addLayout(self.studentslistlayout)
 
     def setup_btns(self):
+        font = QFont()
+        font.setPointSize(12)
         self.new_btn = QPushButton("New")
+        self.new_btn.setFont(font)
         self.new_btn.clicked.connect(self.open_new_student)
         self.btnslayout.addWidget(self.new_btn)
         self.btnslayout.addStretch()
@@ -73,6 +78,7 @@ class AddStudent(QWidget):
         self.btns = {}
         for name, val in self.btns_conf.items():
             btn = QPushButton(val[0])
+            btn.setFont(font)
             btn.clicked.connect(val[1])
             self.btnslayout.addWidget(btn)
             self.btns[name] = btn

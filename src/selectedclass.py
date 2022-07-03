@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem, QGridLayout,
     QGroupBox
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 import logging, webbrowser
 
@@ -73,7 +73,10 @@ class SelectedClass(QWidget):
         self.mainlayout.addLayout(self.headerlayout)
 
     def setup_details(self):
+        font = QFont()
+        font.setPointSize(12)
         self.detailsGroup = QGroupBox("Details")
+        self.detailsGroup.setFont(font)
         self.detailsGroup.setLayout(self.detailslayout)
         self.inputs_conf = {
             "course": ("Course:", QComboBox),
@@ -96,7 +99,10 @@ class SelectedClass(QWidget):
         self.update_combobox()
 
     def setup_options(self):
+        font = QFont()
+        font.setPointSize(12)
         self.optionsGroup = QGroupBox("Options")
+        self.optionsGroup.setFont(font)
         self.optionsGroup.setLayout(self.optionslayout)
         course = get_course_in_handledclass(self.db, self.handledclass_id)
         self.btns_conf = {
@@ -124,7 +130,10 @@ class SelectedClass(QWidget):
             "gender": "Gender",
             "age": "Age"
         }
+        font = QFont()
+        font.setPointSize(12)
         self.studentstable = QTableWidget()
+        self.studentstable.setFont(font)
         self.studentstable.setColumnCount(len(table_headers))
         self.studentstable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.studentstable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -196,7 +205,7 @@ class SelectedClass(QWidget):
         self.classattendance = HandledClassAttendance(self.handledclass_id, self.db)
         self.classattendance.switch_window.connect(self.reopen_window)
         self.classattendance.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.classattendance.show()
+        self.classattendance.showMaximized()
         self.hide()
 
     def reopen_window(self):

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QLineEdit,
     QTableWidgetItem
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, pyqtSignal
 
 try:
@@ -68,7 +68,10 @@ class HandledClassAttendance(QWidget):
             "excused": "",
             "clear": ""
         }
+        font = QFont()
+        font.setPointSize(12)
         self.attendancetable = QTableWidget()
+        self.attendancetable.setFont(font)
         self.attendancetable.setColumnCount(len(table_headers))
         self.attendancetable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.attendancetable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -129,12 +132,17 @@ class HandledClassAttendance(QWidget):
         self.update_attendance_table()
 
     def setup_navsessions(self):
+        font = QFont()
+        font.setPointSize(12)
         self.back_btn = QPushButton("<< BACK")
+        self.back_btn.setFont(font)
         self.back_btn.clicked.connect(self.back_session)
         self.session = QLineEdit()
+        self.session.setFont(font)
         self.session.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.session.setReadOnly(True)
         self.next_btn = QPushButton("NEXT >>")
+        self.next_btn.setFont(font)
         self.next_btn.clicked.connect(self.next_session)
         self.navsessionslayout.addWidget(self.back_btn)
         self.navsessionslayout.addStretch()

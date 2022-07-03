@@ -90,6 +90,7 @@ class NewClass(QWidget):
         font.setPointSize(12)
         font.setFamily("Roboto Mono")
         for name, val in self.inputs_conf.items():
+            inputvlayout = QVBoxLayout()
             obj = None
             label = QLabel(val[0])
             label.setFont(font)
@@ -99,8 +100,9 @@ class NewClass(QWidget):
             elif val[1] == QComboBox:
                 obj = val[1]()
                 obj.setFont(font)
-            self.inputslayout.addWidget(label)
-            self.inputslayout.addWidget(obj)
+            inputvlayout.addWidget(label)
+            inputvlayout.addWidget(obj)
+            self.inputslayout.addLayout(inputvlayout, 25)
             self.inputs[name] = (label, obj)
         self.mainlayout.addLayout(self.inputslayout)
         self.update_combobox()
@@ -179,7 +181,7 @@ class NewClass(QWidget):
         self.addstudent = AddStudent(self.db)
         self.addstudent.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.addstudent.update_table.connect(self.update_student_table)
-        self.addstudent.show()
+        self.addstudent.showMaximized()
 
     def update_student_table(self, added_student_id: int):
         if added_student_id not in self.student_ids:
