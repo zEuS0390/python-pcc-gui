@@ -25,12 +25,14 @@ except ModuleNotFoundError:
     from db.tables import *
     import rc.resources
 
+# Index Class Button for the table
 class IndexClass(QPushButton):
 
     def __init__(self, student_id: int, *args, parent=None):
         super(IndexClass, self).__init__(*args, parent)
         self.student_id = student_id
 
+# Students Widget
 class Students(QWidget):
 
     def __init__(self, db, parent=None):

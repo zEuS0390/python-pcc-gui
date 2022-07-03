@@ -9,6 +9,7 @@ from configparser import ConfigParser
 import os, sys, shutil, subprocess
 sys.path.insert(0, os.path.dirname(sys.path[0]))
 
+# This function will get all files from a specified resource directory
 def getfiles(rcpath):
     with open(rcpath, "r") as file:
         c = file.read()
@@ -24,6 +25,7 @@ def getfiles(rcpath):
         rcf[index] = item[i:l]
     return rcf
 
+# This function will insert a new resource file
 def insert(rcpath, alias, imgpath):
     with open(rcpath, "r") as file:
         c = file.read()
@@ -39,6 +41,7 @@ def insert(rcpath, alias, imgpath):
     with open(rcpath, "w") as file:
         file.write("".join(l[0]).strip()+"\n\t<qresource>"+"".join(rcf)+"\n\t</qresource>"+"".join(nl[1]))
 
+# Resource Manager Widget
 class RCManager(QWidget):
 
     def __init__(self, parser: ConfigParser, parent=None):
@@ -91,6 +94,7 @@ class RCManager(QWidget):
         for n in files:
             self.file_list.addItem(QListWidgetItem(n))
 
+# Run the application here since this is separate from the main application
 if __name__=="__main__":
     parser = ConfigParser()
     parser.read("cfg/rc.cfg")
