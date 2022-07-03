@@ -48,7 +48,7 @@ class HandledClass(base):
 
     __tablename__ = "handledclass"
     handledclass_id = Column(Integer, primary_key=True)
-    course_id = Column(Integer, ForeignKey("course.course_id"))
+    course_id = Column(Integer, ForeignKey("course.course_id", ondelete="CASCADE"))
     schedule = Column(VARCHAR(200))
     time = Column(VARCHAR(200))
     sessions = Column(Integer, default=10)
