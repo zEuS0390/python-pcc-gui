@@ -120,10 +120,22 @@ def delete_app_link(db: Manager, name):
     db.session.close()
 
 def delete_handledclass(db: Manager, handledclass_id: int):
-    return db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id).delete()
+    handledclass = db.session.query(HandledClass).filter(HandledClass.handledclass_id==handledclass_id)
+    db.session.delete(handledclass)
+    db.session.commit()
+    db.session.close()
 
 def delete_student(db: Manager, student_id: int):
-    return db.session.query(Student).filter(Student.student_id==student_id).delete()
+    student = db.session.query(Student).filter(Student.student_id==student_id).first()
+    db.session.delete(student)
+    db.session.commit()
+    db.session.close()
+
+def delete_course(db: Manager, course_id: int):
+    course = db.session.query(Course).filter(Course.course_id==course_id).first()
+    db.session.delete(course)
+    db.session.commit()
+    db.session.close()
 
 def get_all_links(db: Manager):
     return db.session.query(Link).all()

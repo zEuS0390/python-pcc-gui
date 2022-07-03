@@ -31,7 +31,7 @@ class IndexCourse(QPushButton):
 
 class Courses(QWidget):
 
-    def __init__(self, db, parent=None):
+    def __init__(self, db: Manager, parent=None):
         super(Courses, self).__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.db = db
@@ -138,7 +138,9 @@ class Courses(QWidget):
         print("EDIT:", self.sender().course_id)
 
     def archive_selected_course(self):
-        print("ARCHIVE:", self.sender().course_id)
+        course_id = self.sender().course_id
+        delete_course(self.db, course_id)
+        self.update_courses_table()
         
 
 if __name__=="__main__":
