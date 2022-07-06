@@ -228,7 +228,8 @@ class NewClass(QWidget):
     def add(self):
         add_handled_class(
             self.db,
-            course=self.inputs["course"][1].currentText().split("-")[0],
+            course_name=self.inputs["course"][1].currentText().split("-")[0],
+            course_part=self.inputs["course"][1].currentText().split("-")[1],
             student_ids=self.student_ids,
             sessions=int(self.inputs["sessions"][1].text()),
             schedule=self.inputs["schedule"][1].text(),

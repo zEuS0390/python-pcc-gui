@@ -69,7 +69,8 @@ def add_new_course(db: Manager, **kwargs):
     db.session.close()
 
 def add_handled_class(db: Manager, **kwargs):
-    course_name = kwargs["course"]
+    course_name = kwargs["course_name"]
+    course_part = kwargs["course_part"]
     student_ids = kwargs["student_ids"]
     sessions = kwargs["sessions"]
     schedule = kwargs["schedule"]
@@ -85,7 +86,7 @@ def add_handled_class(db: Manager, **kwargs):
             student.classattendances.append(classattendance)
             handledclass.classattendances.append(classattendance)
         handledclass.students.append(student)
-    course = db.session.query(Course).filter(Course.name==course_name).first()
+    course = db.session.query(Course).filter(Course.name==course_name, Course.part==course_part).first()
     course.handledclasses.append(handledclass)
     db.session.add(course)
     db.session.add(handledclass)

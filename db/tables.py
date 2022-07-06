@@ -53,7 +53,7 @@ class HandledClass(base):
     time = Column(VARCHAR(200))
     sessions = Column(Integer, default=10)
     current_session = Column(Integer, default=0)
-    students = relationship("Student", backref="handledclass", cascade="all, delete-orphan")
+    students = relationship("Student", backref="handledclass")
     classattendances = relationship("ClassAttendance", backref="handledclass", cascade="all, delete-orphan")
 
 class ClassAttendance(base):
